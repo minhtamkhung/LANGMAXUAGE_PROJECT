@@ -1,0 +1,77 @@
+# =============================================================
+# application.yml — TOEIC Flashcard App
+# Giá trị nhạy cảm đọc từ environment variable (${VAR_NAME})
+# Local dev: tạo file application-dev.yml và override ở đó
+# =============================================================
+
+spring:
+  application:
+    name: toeic-flashcard
+
+  profiles:
+    active: dev   # đổi thành 'prod' khi deploy
+
+  # ── PostgreSQL ──────────────────────────────────────────────
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/toeic_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate          # KHÔNG để create/update trên prod
+      # dùng schema.sql để tạo bảng thủ công
+    show-sql: false               # bật true khi debug
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    open-in-view: false           # tắt OSIV — tránh lazy loading ngoài transaction
+  flyway:
+    enabled: true
+                # đổi 'always' lần đầu chạy để chạy schema.sql
+
+  # ── Redis ───────────────────────────────────────────────────
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}  # để trống nếu local không có password
+
+  # ── File upload ─────────────────────────────────────────────
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+# ── JWT ───────────────────────────────────────────────────────
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-this-secret-in-production-min-32-chars}
+    access-token-expiration-ms: 900000        # 15 phút
+    refresh-token-expiration-ms: 604800000    # 7 ngày
+
+  # ── Cloudinary ──────────────────────────────────────────────
+  cloudinary:
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:your_cloud_name}
+    api-key: ${CLOUDINARY_API_KEY:your_api_key}
+    api-secret: ${CLOUDINARY_API_SECRET:your_api_secret}
+    folder: toeic-flashcard   # tất cả ảnh upload vào folder này
+
+  # ── CORS ────────────────────────────────────────────────────
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}  # Vite dev server
+
+# ── Logging ───────────────────────────────────────────────────
+logging:
+  level:
+    root: INFO
+    com.dmt.toeicapp: INFO          # package đúng của project
+    org.hibernate.SQL: WARN          # tắt SQL log trừ khi cần debug
+
+  pattern:
+    console: "%d{HH:mm:ss} [%thread] %-5level %logger{36} — %msg%n"
+
+  file:
+    name: logs/toeic-app.log        # AOP LoggingAspect ghi vào đây

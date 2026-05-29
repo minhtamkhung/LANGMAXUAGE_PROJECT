@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        font-family: 'Inter', sans-serif;
+        color: #191c1d;
+        background-color: #f8f9fa;
+    }
+}
+
+@layer utilities {
+    .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        font-family: 'Material Symbols Outlined';
+        font-style: normal;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+    }
+
+    .ease-out-expo {
+        transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .bg-pattern {
+        background-color: #f8f9fa;
+        background-image:
+                radial-gradient(#d8e2ff 0.8px, transparent 0.8px),
+                radial-gradient(#d8e2ff 0.8px, #f8f9fa 0.8px);
+        background-size: 32px 32px;
+        background-position: 0 0, 16px 16px;
+    }
+
+    .glass-effect {
+        backdrop-filter: blur(20px);
+        background-color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Flip card animation */
+    .flip-card { perspective: 1200px; }
+    .flip-inner {
+        position: relative;
+        transition: transform 0.55s cubic-bezier(0.19, 1, 0.22, 1);
+        transform-style: preserve-3d;
+    }
+    .flip-inner.flipped { transform: rotateY(180deg); }
+    .flip-front,
+    .flip-back {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+    .flip-back { transform: rotateY(180deg); }
+}

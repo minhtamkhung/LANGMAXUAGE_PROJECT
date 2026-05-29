@@ -1,0 +1,33 @@
+# =============================================================
+# .gitignore — TOEIC Flashcard App
+# =============================================================
+
+# ── Build output ──────────────────────────────────────────────
+target/
+*.jar
+*.war
+*.class
+
+# ── IDE ───────────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# ── Environment & secrets — KHÔNG BAO GIỜ commit ──────────────
+application-dev.yml
+application-local.yml
+.env
+*.env
+
+# ── Logs ──────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── OS ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Maven ─────────────────────────────────────────────────────
+.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties

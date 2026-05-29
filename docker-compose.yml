@@ -1,0 +1,53 @@
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: langmaxuage_postgres
+    environment:
+      POSTGRES_DB: langmaxuage_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: langmaxuage_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./langmaxuage-backend
+      dockerfile: Dockerfile
+    container_name: langmaxuage_backend
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./langmaxuage-frontend
+      dockerfile: Dockerfile
+    container_name: langmaxuage_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+volumes:
+  postgres_data:
+  redis_data:

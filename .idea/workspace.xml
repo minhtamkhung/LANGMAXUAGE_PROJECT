@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="5b944a25-cac8-47ff-a1cb-bc77749511ce" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/API_RESPONSE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/CODING_STANDARDS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/PROJECT_DECISIONS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/PROJECT_FLOW.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/active_quiz_session/code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/active_quiz_session/screen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/authentication/code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/authentication/screen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/dashboard/code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/dashboard/screen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/flashcard_gallery/code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/flashcard_gallery/screen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/interactive_flashcards/code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/interactive_flashcards/screen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/language_selection/code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/language_selection/screen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/lumina_adaptive/DESIGN.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/lumina_study/DESIGN.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/quiz_results_summary/code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/quiz_results_summary/screen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/spaced_repetition_study/code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/spaced_repetition_study/screen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/topics_library/code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/topics_library/screen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/topics_library_multi_language/code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/topics_library_multi_language/screen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/user_profile_statistics/code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/stitch_authentication/stitch_authentication/user_profile_statistics/screen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/eslint.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/postcss.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/public/favicon.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/public/icons.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/App.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/api/authApi.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/api/axiosInstance.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/api/flashcardApi.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/api/i18nApi.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/api/progressApi.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/api/quizApi.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/api/topicApi.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/api/userApi.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/components/Layout.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/components/LoadingSpinner.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/components/ProtectedRoute.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/components/Sidebar.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/context/AuthContext.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/context/LanguageContext.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/hooks/useAuth.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/index.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/main.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/pages/FlashcardPage.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/pages/HomePage.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/pages/LanguageSelectionPage.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/pages/LoginPage.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/pages/ProfilePage.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/pages/QuizPage.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/pages/RegisterPage.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/pages/StudyPage.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/src/pages/TopicsPage.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/tailwind.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/toeic-frontend/vite.config.js" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_D:/PROJECT_CANHAN" value="3EIyqIH8YzqbXGzuf1X39XrqREy" />
+    </persistenceIdMap>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/langmaxuage-backend" />
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3EIyqIH8YzqbXGzuf1X39XrqREy" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/PROJECT_CANHAN/docs&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\PROJECT_CANHAN\docs" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\PROJECT_CANHAN\langmaxuage-backend\src\main\resources" />
+      <recent name="D:\PROJECT_CANHAN" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.37" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5b944a25-cac8-47ff-a1cb-bc77749511ce" name="Changes" comment="" />
+      <created>1779880567780</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1779880567780</updated>
+      <workItem from="1779880569049" duration="3368000" />
+      <workItem from="1779894442293" duration="554000" />
+      <workItem from="1779961767724" duration="3047000" />
+      <workItem from="1779977663143" duration="321000" />
+      <workItem from="1780046667293" duration="3349000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>
