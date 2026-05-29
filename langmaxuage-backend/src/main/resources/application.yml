@@ -12,25 +12,15 @@ spring:
     active: dev   # đổi thành 'prod' khi deploy
 
   # ── PostgreSQL ──────────────────────────────────────────────
-  datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5433/toeic_db}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
-    driver-class-name: org.postgresql.Driver
-
   jpa:
     hibernate:
-      ddl-auto: validate          # KHÔNG để create/update trên prod
-      # dùng schema.sql để tạo bảng thủ công
-    show-sql: false               # bật true khi debug
+      ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-    open-in-view: false           # tắt OSIV — tránh lazy loading ngoài transaction
+    open-in-view: false
   flyway:
     enabled: true
-                # đổi 'always' lần đầu chạy để chạy schema.sql
 
   # ── Redis ───────────────────────────────────────────────────
   data:
@@ -61,17 +51,4 @@ app:
 
   # ── CORS ────────────────────────────────────────────────────
   cors:
-    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}  # Vite dev server
-
-# ── Logging ───────────────────────────────────────────────────
-logging:
-  level:
-    root: INFO
-    com.dmt.toeicapp: INFO          # package đúng của project
-    org.hibernate.SQL: WARN          # tắt SQL log trừ khi cần debug
-
-  pattern:
-    console: "%d{HH:mm:ss} [%thread] %-5level %logger{36} — %msg%n"
-
-  file:
-    name: logs/toeic-app.log        # AOP LoggingAspect ghi vào đây
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000}  # Vite dev server
