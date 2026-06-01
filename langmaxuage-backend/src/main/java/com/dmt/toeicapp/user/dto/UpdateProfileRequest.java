@@ -8,5 +8,11 @@ public record UpdateProfileRequest(
         String username,
 
         // avatarUrl do Cloudinary trả về sau khi upload ảnh
-        String avatarUrl
+        String avatarUrl,
+
+        Boolean onboarded,
+
+        Integer targetScore,
+
+        Integer dailyGoalMinutes
 ) {}

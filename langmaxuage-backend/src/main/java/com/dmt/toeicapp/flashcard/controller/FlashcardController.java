@@ -1,6 +1,7 @@
 package com.dmt.toeicapp.flashcard.controller;
 
 import com.dmt.toeicapp.common.response.ApiResponse;
+import com.dmt.toeicapp.flashcard.dto.BulkImportResult;
 import com.dmt.toeicapp.flashcard.dto.FlashcardRequest;
 import com.dmt.toeicapp.flashcard.dto.FlashcardResponse;
 import com.dmt.toeicapp.flashcard.service.FlashcardService;
@@ -90,6 +91,15 @@ public class FlashcardController {
     public ResponseEntity<ApiResponse<FlashcardResponse>> deleteImage(@PathVariable Long id) {
         return ResponseEntity.ok(
                 ApiResponse.ok(flashcardService.deleteImage(id), "Xóa ảnh thành công")
+        );
+    }
+
+    @PostMapping(value = "/bulk-import", consumes = "multipart/form-data")
+    public ResponseEntity<ApiResponse<BulkImportResult>> bulkImport(
+            @RequestParam("topicId") Long topicId,
+            @RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(
+                ApiResponse.ok(flashcardService.bulkImport(topicId, file), "Bulk import hoàn tất")
         );
     }
 }

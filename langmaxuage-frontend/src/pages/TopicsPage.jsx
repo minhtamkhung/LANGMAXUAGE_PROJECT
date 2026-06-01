@@ -31,7 +31,7 @@ const LOCALE_LABEL = {
 
 export default function TopicsPage() {
     const navigate                      = useNavigate()
-    const { locale, currentLocaleInfo } = useLanguage()
+    const { locale, currentLocaleInfo, t } = useLanguage()
     const [topics, setTopics]           = useState([])
     const [filter, setFilter]           = useState('all')
     const [loading, setLoading]         = useState(true)
@@ -61,14 +61,14 @@ export default function TopicsPage() {
             <header className="mb-12">
                 <div className="flex items-center gap-3 mb-4">
                     <span className="bg-tertiary/10 text-tertiary px-3 py-1 rounded-full text-xs font-bold font-label tracking-widest uppercase">
-                        {localeName.toUpperCase()} CONTEXT
+                        {localeName.toUpperCase()} {t('topics.context')}
                     </span>
                     {/* Filter pills */}
                     <div className="flex items-center gap-2 ml-auto">
                         {[
-                            { key: 'all',      label: `All (${topics.length})` },
-                            { key: 'system',   label: `System` },
-                            { key: 'personal', label: `Mine` },
+                            { key: 'all',      label: t('topics.all_filter').replace('{count}', topics.length) },
+                            { key: 'system',   label: t('topics.system') },
+                            { key: 'personal', label: t('topics.mine_filter') },
                         ].map(({ key, label }) => (
                             <button key={key} onClick={() => setFilter(key)}
                                     className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all
@@ -83,11 +83,11 @@ export default function TopicsPage() {
                 </div>
 
                 <h1 className="text-4xl md:text-5xl font-extrabold text-on-surface font-headline tracking-tight mb-4">
-                    Trending Topics for{' '}
+                    {t('topics.title')}{' '}
                     <span className="text-secondary">{localeName}</span>
                 </h1>
                 <p className="text-on-surface-variant max-w-2xl text-lg leading-relaxed">
-                    Explore curated vocabulary modules adapted for TOEIC mastery.
+                    {t('topics.subtitle')}
                 </p>
             </header>
 
@@ -98,7 +98,7 @@ export default function TopicsPage() {
             ) : displayed.length === 0 ? (
                 <div className="text-center py-24 text-on-surface-variant">
                     <span className="material-symbols-outlined text-5xl mb-3 block opacity-30">folder_open</span>
-                    <p>No topics found for this language.</p>
+                    <p>{t('topics.no_topics_found')}</p>
                 </div>
             ) : (
                 <>
@@ -108,7 +108,9 @@ export default function TopicsPage() {
                         {featured && (
                             <FeatureCard
                                 topic={featured}
+                                t={t}
                                 onClick={() => navigate(`/flashcards/${featured.id}`)}
+                                onManage={!featured.isSystem ? () => navigate(`/topics/${featured.id}/manage`) : null}
                             />
                         )}
 
@@ -117,8 +119,10 @@ export default function TopicsPage() {
                             <SmallCard
                                 key={topic.id}
                                 topic={topic}
+                                t={t}
                                 colSpan="md:col-span-4"
                                 onClick={() => navigate(`/flashcards/${topic.id}`)}
+                                onManage={!topic.isSystem ? () => navigate(`/topics/${topic.id}/manage`) : null}
                             />
                         ))}
 
@@ -127,8 +131,10 @@ export default function TopicsPage() {
                             <SmallCard
                                 key={topic.id}
                                 topic={topic}
+                                t={t}
                                 colSpan="md:col-span-4"
                                 onClick={() => navigate(`/flashcards/${topic.id}`)}
+                                onManage={!topic.isSystem ? () => navigate(`/topics/${topic.id}/manage`) : null}
                             />
                         ))}
                     </div>
@@ -142,15 +148,15 @@ export default function TopicsPage() {
                         </div>
                         <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
                             <div>
-                                <h2 className="text-3xl font-bold font-headline mb-3">Can't find what you need?</h2>
-                                <p className="text-slate-300 max-w-md">Create a personal topic with your own vocabulary set.</p>
+                                <h2 className="text-3xl font-bold font-headline mb-3">{t('topics.cant_find_what_you_need')}</h2>
+                                <p className="text-slate-300 max-w-md">{t('topics.create_personal_topic')}</p>
                             </div>
                             <button
                                 onClick={() => navigate('/topics/new')}
                                 className="md:ml-auto flex items-center gap-2 bg-secondary text-white px-8 py-4 rounded-xl font-bold font-label shadow-xl hover:bg-secondary-container transition-all active:scale-95 whitespace-nowrap"
                             >
                                 <span className="material-symbols-outlined">add_circle</span>
-                                Create Custom Topic
+                                {t('topics.create_custom')}
                             </button>
                         </div>
                     </section>
@@ -160,7 +166,7 @@ export default function TopicsPage() {
     )
 }
 
-function FeatureCard({ topic, onClick }) {
+function FeatureCard({ topic, t, onClick, onManage }) {
     const icon = getIcon(topic.name)
     return (
         <div className="md:col-span-8 group relative overflow-hidden rounded-[2rem] bg-surface-container-lowest shadow-sm hover:shadow-xl transition-all duration-500 border border-outline-variant/15 cursor-pointer"
@@ -170,9 +176,21 @@ function FeatureCard({ topic, onClick }) {
                     <div className={`p-4 rounded-2xl ${topic.isSystem ? 'bg-secondary-fixed text-secondary' : 'bg-tertiary/10 text-tertiary'}`}>
                         <span className="material-symbols-outlined text-3xl">{icon}</span>
                     </div>
-                    <span className="text-xs font-bold font-label bg-surface-container-highest px-3 py-1.5 rounded-full uppercase tracking-tighter">
-                        {topic.isSystem ? 'System' : 'Personal'}
-                    </span>
+                    <div className="flex items-center gap-2">
+                        {!topic.isSystem && onManage && (
+                            <button
+                                onClick={e => { e.stopPropagation(); onManage() }}
+                                className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full
+                                           bg-tertiary/10 text-tertiary hover:bg-tertiary/20 transition-all"
+                            >
+                                <span className="material-symbols-outlined text-sm">settings</span>
+                                {t('topics.manage')}
+                            </button>
+                        )}
+                        <span className="text-xs font-bold font-label bg-surface-container-highest px-3 py-1.5 rounded-full uppercase tracking-tighter">
+                            {topic.isSystem ? t('topics.system') : t('topics.personal')}
+                        </span>
+                    </div>
                 </div>
                 <div className="mt-auto">
                     <h3 className="text-3xl font-bold font-headline mb-3 group-hover:text-secondary transition-colors">
@@ -182,7 +200,7 @@ function FeatureCard({ topic, onClick }) {
                         <p className="text-on-surface-variant mb-8 max-w-md line-clamp-2">{topic.description}</p>
                     )}
                     <button className="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-4 rounded-xl font-bold font-label flex items-center gap-2 hover:shadow-lg transition-all active:scale-95">
-                        Start Study
+                        {t('topics.start_study')}
                         <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                     </button>
                 </div>
@@ -191,15 +209,27 @@ function FeatureCard({ topic, onClick }) {
     )
 }
 
-function SmallCard({ topic, onClick, colSpan }) {
+function SmallCard({ topic, t, onClick, onManage, colSpan }) {
     const icon = getIcon(topic.name)
     return (
         <div className={`${colSpan} bg-surface-container-lowest rounded-[2rem] p-8 shadow-sm flex flex-col border border-outline-variant/15 hover:bg-secondary-fixed/30 hover:shadow-md transition-all cursor-pointer group`}
              onClick={onClick}>
             <div className="mb-8">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6
-                    ${topic.isSystem ? 'bg-primary-fixed text-primary' : 'bg-tertiary/10 text-tertiary'}`}>
-                    <span className="material-symbols-outlined text-2xl">{icon}</span>
+                <div className="flex justify-between items-start mb-6">
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center
+                        ${topic.isSystem ? 'bg-primary-fixed text-primary' : 'bg-tertiary/10 text-tertiary'}`}>
+                        <span className="material-symbols-outlined text-2xl">{icon}</span>
+                    </div>
+                    {!topic.isSystem && onManage && (
+                        <button
+                            onClick={e => { e.stopPropagation(); onManage() }}
+                            className="flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full
+                                       bg-tertiary/10 text-tertiary hover:bg-tertiary/20 transition-all"
+                        >
+                            <span className="material-symbols-outlined text-sm">settings</span>
+                            {t('topics.manage')}
+                        </button>
+                    )}
                 </div>
                 <h3 className="text-2xl font-bold font-headline mb-3 group-hover:text-secondary transition-colors">
                     {topic.name}
@@ -209,8 +239,9 @@ function SmallCard({ topic, onClick, colSpan }) {
                 )}
             </div>
             <button className="mt-auto w-full border-2 border-secondary/20 text-secondary px-6 py-3 rounded-xl font-bold font-label hover:bg-secondary hover:text-white transition-all active:scale-95">
-                Start Study
+                {t('topics.start_study')}
             </button>
         </div>
     )
-}
+}
+

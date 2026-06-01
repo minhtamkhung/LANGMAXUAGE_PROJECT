@@ -2,15 +2,42 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5b944a25-cac8-47ff-a1cb-bc77749511ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/resources/logback-spring.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/ToeicApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/ToeicApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/resources/application-docker.yml" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/resources/application-docker.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/controller/FlashcardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/controller/FlashcardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/repository/FlashcardRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/repository/FlashcardRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/service/FlashcardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/service/FlashcardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/service/impl/FlashcardServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/service/impl/FlashcardServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/quiz/service/impl/QuizServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/quiz/service/impl/QuizServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/dto/AuthResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/dto/AuthResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/dto/UpdateProfileRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/dto/UpdateProfileRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/dto/UserResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/dto/UserResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/mapper/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/service/impl/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/service/impl/AuthServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/service/impl/UserServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/resources/logback-spring.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/api/authApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/api/authApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/api/flashcardApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/api/flashcardApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/api/topicApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/api/topicApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/components/Layout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/components/Layout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/components/ProtectedRoute.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/components/ProtectedRoute.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/components/Sidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/components/Sidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/context/AuthContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/context/AuthContext.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/context/LanguageContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/context/LanguageContext.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/HomePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/HomePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/LoginPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/LoginPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/ProfilePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/ProfilePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/QuizPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/QuizPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/RegisterPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/RegisterPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/StudyPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/StudyPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/TopicsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/TopicsPage.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,24 +65,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/PROJECT_CANHAN/docs&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/PROJECT_CANHAN",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\PROJECT_CANHAN\docs" />
@@ -64,6 +91,55 @@
       <recent name="D:\PROJECT_CANHAN\langmaxuage-backend\src\main\resources" />
       <recent name="D:\PROJECT_CANHAN" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="PROJECT_CANHAN" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="PROJECT_CANHAN" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="PROJECT_CANHAN" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="RUN_TOOL" value="" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <module name="PROJECT_CANHAN" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="RUN_TOOL" value="" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -85,7 +161,14 @@
       <workItem from="1779961767724" duration="3047000" />
       <workItem from="1779977663143" duration="321000" />
       <workItem from="1780046667293" duration="7441000" />
-      <workItem from="1780065754088" duration="2225000" />
+      <workItem from="1780065754088" duration="3515000" />
+      <workItem from="1780070698776" duration="702000" />
+      <workItem from="1780072170749" duration="1864000" />
+      <workItem from="1780296726177" duration="3676000" />
+      <workItem from="1780300837660" duration="819000" />
+      <workItem from="1780310282468" duration="3000" />
+      <workItem from="1780319004604" duration="428000" />
+      <workItem from="1780320432529" duration="4977000" />
     </task>
     <servers />
   </component>

@@ -10,5 +10,6 @@ public interface UserMapper {
 
     @Mapping(source = "role", target = "role",
             defaultExpression = "java(source.getRole().name())")
+    @Mapping(source = "onboarded", target = "onboarded")
     UserResponse toResponse(User source);
 }

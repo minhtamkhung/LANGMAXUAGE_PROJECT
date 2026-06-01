@@ -21,6 +21,14 @@ const flashcardApi = {
         })
     },
     deleteImage:  (id)        => api.delete(`/flashcards/${id}/image`),
+    bulkImport:   (topicId, file) => {
+        const form = new FormData()
+        form.append('topicId', topicId)
+        form.append('file', file)
+        return api.post('/flashcards/bulk-import', form, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+    },
 }
 
 export default flashcardApi

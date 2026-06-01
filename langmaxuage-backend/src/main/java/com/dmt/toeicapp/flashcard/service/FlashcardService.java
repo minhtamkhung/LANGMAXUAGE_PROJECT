@@ -1,5 +1,6 @@
 package com.dmt.toeicapp.flashcard.service;
 
+import com.dmt.toeicapp.flashcard.dto.BulkImportResult;
 import com.dmt.toeicapp.flashcard.dto.FlashcardRequest;
 import com.dmt.toeicapp.flashcard.dto.FlashcardResponse;
 import org.springframework.data.domain.Page;
@@ -25,4 +26,11 @@ public interface FlashcardService {
     FlashcardResponse uploadImage(Long id, MultipartFile file);
 
     FlashcardResponse deleteImage(Long id);
+
+    /**
+     * Import hàng loạt flashcard từ file CSV.
+     * Format: word,pronunciation,definition,example,difficulty
+     * Dòng đầu tiên là header (bị bỏ qua).
+     */
+    BulkImportResult bulkImport(Long topicId, MultipartFile file);
 }

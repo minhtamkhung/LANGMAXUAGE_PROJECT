@@ -3,16 +3,16 @@ import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
 
 const navItems = [
-    { path: '/home',    icon: 'dashboard',   label: 'Dashboard' },
-    { path: '/topics',  icon: 'folder',      label: 'Topics'    },
-    { path: '/study',   icon: 'menu_book',   label: 'Study'     },
-    { path: '/quiz',    icon: 'quiz',        label: 'Quiz'      },
-    { path: '/profile', icon: 'person',      label: 'Profile'   },
+    { path: '/home',    icon: 'dashboard',   key: 'sidebar.home' },
+    { path: '/topics',  icon: 'folder',      key: 'sidebar.topics' },
+    { path: '/study',   icon: 'menu_book',   key: 'sidebar.study' },
+    { path: '/quiz',    icon: 'quiz',        key: 'sidebar.quiz' },
+    { path: '/profile', icon: 'person',      key: 'sidebar.profile' },
 ]
 
 export default function Sidebar() {
     const { user, logout }            = useAuth()
-    const { locale, setLocale, locales } = useLanguage()
+    const { locale, setLocale, locales, t } = useLanguage()
     const location                    = useLocation()
     const navigate                    = useNavigate()
 
@@ -33,9 +33,27 @@ export default function Sidebar() {
                 </p>
             </div>
 
+            {/* Quick Search trigger */}
+            <div className="px-4 mb-4">
+                <button
+                    onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
+                    className="w-full flex items-center justify-between px-4 py-2.5 bg-surface-container hover:bg-surface-container-high
+                               text-on-surface-variant hover:text-primary border border-outline-variant/15
+                               rounded-2xl text-xs font-semibold tracking-tight transition-all duration-200"
+                >
+                    <span className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-base">search</span>
+                        {t('common.search') || 'Search...'}
+                    </span>
+                    <kbd className="bg-surface-container-highest px-1.5 py-0.5 rounded text-[10px] font-mono text-outline font-bold shadow-sm">
+                        Ctrl K
+                    </kbd>
+                </button>
+            </div>
+
             {/* Nav */}
             <nav className="flex-1 space-y-1 px-2">
-                {navItems.map(({ path, icon, label }) => {
+                {navItems.map(({ path, icon, key }) => {
                     const active = location.pathname === path
                     return (
                         <Link
@@ -51,7 +69,7 @@ export default function Sidebar() {
                                   style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}>
                                 {icon}
                             </span>
-                            {label}
+                            {t(key)}
                         </Link>
                     )
                 })}

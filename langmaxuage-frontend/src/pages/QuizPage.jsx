@@ -7,7 +7,7 @@ import { useLanguage } from '../context/LanguageContext'
 const OPTION_LABELS = ['A', 'B', 'C', 'D']
 
 export default function QuizPage() {
-    const { locale }              = useLanguage() // Lấy locale hiện tại
+    const { locale, t }           = useLanguage() // Lấy locale hiện tại
     const [step, setStep]         = useState('setup')   // setup | playing | result
     const [topics, setTopics]     = useState([])
     const [config, setConfig]     = useState({ topicId: '', questionCount: 10 })
@@ -82,20 +82,20 @@ export default function QuizPage() {
             {step === 'setup' && (
                 <div className="max-w-xl">
                     <h2 className="font-headline text-5xl font-extrabold tracking-tight text-on-surface mb-3">
-                        Start a Quiz
+                        {t('quiz.start_quiz_title')}
                     </h2>
                     <p className="text-on-surface-variant text-lg mb-10">
-                        Kiểm tra kiến thức của bạn với ngôn ngữ <span className="text-primary font-bold uppercase">{locale}</span>.
+                        {t('quiz.test_knowledge_with_lang').replace('{lang}', locale.toUpperCase())}
                     </p>
                     <div className="bg-surface-container-lowest rounded-xl p-8 shadow-sm border border-outline-variant/10 space-y-6">
                         <div>
                             <label className="block text-sm font-bold font-label text-on-surface-variant mb-2 uppercase tracking-wider">
-                                Select Topic
+                                {t('quiz.select_topic')}
                             </label>
                             <select value={config.topicId}
                                     onChange={e => setConfig({ ...config, topicId: e.target.value })}
                                     className="w-full border border-outline-variant/20 rounded-DEFAULT px-4 py-3 bg-surface-container-low text-on-surface focus:ring-2 focus:ring-primary outline-none font-body">
-                                <option value="">— Choose a topic —</option>
+                                <option value="">{t('quiz.choose_topic')}</option>
                                 {topics.map(t => (
                                     <option key={t.id} value={t.id}>{t.translatedName || t.name}</option>
                                 ))}
@@ -103,7 +103,7 @@ export default function QuizPage() {
                         </div>
                         <div>
                             <label className="block text-sm font-bold font-label text-on-surface-variant mb-2 uppercase tracking-wider">
-                                Number of Questions
+                                {t('quiz.num_questions')}
                             </label>
                             <div className="flex gap-3">
                                 {[5, 10, 20, 30].map(n => (
@@ -120,7 +120,7 @@ export default function QuizPage() {
                         </div>
                         <button onClick={handleStart} disabled={loading || !config.topicId}
                                 className="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold rounded-DEFAULT shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50">
-                            {loading ? 'Setting up...' : 'Begin Quiz →'}
+                            {loading ? t('common.loading') : t('quiz.begin_quiz_btn')}
                         </button>
                     </div>
                 </div>
@@ -133,10 +133,13 @@ export default function QuizPage() {
                         <div className="flex-1">
                             <div className="flex justify-between items-end mb-2">
                                 <span className="text-sm font-bold text-primary font-headline tracking-wide uppercase">
-                                  Question {qIndex + 1} of {attempt.questions.length}
+                                  {t('quiz.question_indicator')
+                                      .replace('{current}', qIndex + 1)
+                                      .replace('{total}', attempt.questions.length)
+                                  }
                                 </span>
                                 <span className="text-sm font-medium text-outline">
-                                  {progressPct}% Completed
+                                  {t('quiz.pct_completed').replace('{pct}', progressPct)}
                                 </span>
                             </div>
                             <div className="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
@@ -149,7 +152,7 @@ export default function QuizPage() {
                     <div className="bg-surface-container-lowest rounded-xl p-10 md:p-16 shadow-sm relative overflow-hidden mb-6 border border-outline-variant/10">
                         <div className="relative z-10 flex flex-col items-center text-center">
                             <span className="px-4 py-1.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] font-bold uppercase tracking-widest mb-8">
-                                Vocabulary Focus
+                                {t('quiz.vocabulary_focus')}
                             </span>
                             <h1 className="text-3xl md:text-5xl font-extrabold text-on-surface font-headline leading-tight tracking-tight mb-4">
                                 {currentQ.word}
@@ -158,7 +161,7 @@ export default function QuizPage() {
                                 <p className="text-on-surface-variant italic text-xl">{currentQ.pronunciation}</p>
                             )}
                             <p className="text-outline text-lg font-medium mt-6 italic">
-                                Chọn định nghĩa đúng trong tiếng <span className="text-secondary font-bold uppercase">{locale}</span>:
+                                {t('quiz.choose_correct_def').replace('{lang}', locale.toUpperCase())}
                             </p>
                         </div>
                     </div>
@@ -206,11 +209,11 @@ export default function QuizPage() {
                                 <span className="material-symbols-outlined">
                                   {answerRes.isCorrect ? 'task_alt' : 'error'}
                                 </span>
-                                {answerRes.isCorrect ? 'Chính xác!' : 'Cố gắng lần sau!'}
+                                {answerRes.isCorrect ? t('quiz.correct_feedback') : t('quiz.wrong_feedback')}
                             </div>
                             <button onClick={handleNext}
                                     className="px-12 py-4 bg-primary text-on-primary rounded-full font-bold shadow-xl hover:bg-primary-container transition-all active:scale-95">
-                                {qIndex + 1 >= attempt.questions.length ? 'View Results' : 'Next Question →'}
+                                {qIndex + 1 >= attempt.questions.length ? t('quiz.view_results_btn') : t('quiz.next_question_btn')}
                             </button>
                         </div>
                     )}
@@ -236,7 +239,10 @@ export default function QuizPage() {
                             <span className="text-2xl text-outline font-medium">/100</span>
                         </h2>
                         <p className="text-on-surface-variant mb-10 font-medium">
-                            {result.correctAnswers} / {result.totalQuestions} câu đúng
+                            {t('quiz.correct_answers_count')
+                                .replace('{correct}', result.correctAnswers)
+                                .replace('{total}', result.totalQuestions)
+                            }
                         </p>
 
                         <div className="flex flex-col gap-3">
@@ -245,11 +251,11 @@ export default function QuizPage() {
                                 setQIndex(0); setSelected(null); setAnswerRes(null);
                             }}
                                     className="w-full bg-primary text-on-primary py-4 rounded-full font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
-                                Thử chủ đề khác
+                                {t('quiz.try_another_topic')}
                             </button>
                             <button onClick={() => navigate('/home')}
                                     className="w-full border-2 border-outline-variant text-on-surface-variant py-4 rounded-full font-bold hover:bg-surface-container transition-all">
-                                Quay lại trang chủ
+                                {t('quiz.back_to_homepage')}
                             </button>
                         </div>
                     </div>
@@ -257,4 +263,4 @@ export default function QuizPage() {
             )}
         </Layout>
     )
-}
+}

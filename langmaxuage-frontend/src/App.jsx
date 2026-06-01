@@ -4,12 +4,16 @@ import { LanguageProvider } from './context/LanguageContext'
 import ProtectedRoute from './components/ProtectedRoute'
 
 import LoginPage              from './pages/LoginPage'
+import RegisterPage           from './pages/RegisterPage'
 import HomePage               from './pages/HomePage'
 import TopicsPage             from './pages/TopicsPage'
 import FlashcardPage          from './pages/FlashcardPage'
+import CreateTopicPage        from './pages/CreateTopicPage'
+import ManageFlashcardsPage   from './pages/ManageFlashcardsPage'
 import StudyPage              from './pages/StudyPage'
 import QuizPage               from './pages/QuizPage'
 import ProfilePage            from './pages/ProfilePage'
+import OnboardingPage         from './pages/OnboardingPage'
 import LanguageSelectionPage  from './pages/LanguageSelectionPage'
 
 function RootRedirect() {
@@ -25,10 +29,13 @@ export default function App() {
                     <Routes>
                         {/* Public */}
                         <Route path="/login"    element={<LoginPage />} />
-                        <Route path="/register" element={<LoginPage />} />
+                        <Route path="/register" element={<RegisterPage />} />
                         <Route path="/language" element={<LanguageSelectionPage />} />
 
                         {/* Protected */}
+                        <Route path="/onboarding" element={
+                            <ProtectedRoute><OnboardingPage /></ProtectedRoute>
+                        } />
                         <Route path="/home" element={
                             <ProtectedRoute><HomePage /></ProtectedRoute>
                         } />
@@ -37,6 +44,12 @@ export default function App() {
                         } />
                         <Route path="/flashcards/:topicId" element={
                             <ProtectedRoute><FlashcardPage /></ProtectedRoute>
+                        } />
+                        <Route path="/topics/new" element={
+                            <ProtectedRoute><CreateTopicPage /></ProtectedRoute>
+                        } />
+                        <Route path="/topics/:topicId/manage" element={
+                            <ProtectedRoute><ManageFlashcardsPage /></ProtectedRoute>
                         } />
                         <Route path="/study" element={
                             <ProtectedRoute><StudyPage /></ProtectedRoute>

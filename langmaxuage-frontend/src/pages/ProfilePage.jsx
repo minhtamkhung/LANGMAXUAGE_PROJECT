@@ -17,7 +17,7 @@ export default function ProfilePage() {
     const [msg, setMsg]               = useState('')
 
     // Lấy dữ liệu đa ngôn ngữ từ Context
-    const { locale, setLocale, locales } = useLanguage()
+    const { locale, setLocale, locales, t } = useLanguage()
 
     useEffect(() => {
         // Load progress stats
@@ -47,10 +47,10 @@ export default function ProfilePage() {
         setSaving(true); setMsg('')
         try {
             await userApi.updateMe({ username: form.username, avatarUrl: form.avatarUrl || null })
-            setMsg('Profile updated!')
+            setMsg(t('profile.profile_updated'))
             setEditMode(false)
         } catch (err) {
-            setMsg(err.response?.data?.message || 'Error updating profile')
+            setMsg(err.response?.data?.message || t('profile.error_updating_profile'))
         } finally { setSaving(false) }
     }
 
@@ -59,11 +59,11 @@ export default function ProfilePage() {
         setSaving(true); setMsg('')
         try {
             await userApi.changePassword(pwForm.oldPassword, pwForm.newPassword)
-            setMsg('Password changed! Please login again.')
+            setMsg(t('profile.password_changed'))
             setPwForm({ oldPassword: '', newPassword: '' })
             setTimeout(() => logout(), 2000)
         } catch (err) {
-            setMsg(err.response?.data?.message || 'Error changing password')
+            setMsg(err.response?.data?.message || t('profile.error_changing_password'))
         } finally { setSaving(false) }
     }
 
@@ -103,7 +103,7 @@ export default function ProfilePage() {
                             <span className="material-symbols-outlined text-sm">
                                 {editMode ? 'close' : 'edit'}
                             </span>
-                            {editMode ? 'Cancel' : 'Edit Profile'}
+                            {editMode ? t('common.cancel') : t('profile.edit_profile')}
                         </button>
                     </div>
                 </div>
@@ -111,7 +111,7 @@ export default function ProfilePage() {
 
             {msg && (
                 <div className={`mb-6 px-4 py-3 rounded-DEFAULT text-sm font-medium ${
-                    msg.includes('Error') || msg.includes('error') ? 'bg-error-container text-error' : 'bg-primary-fixed text-primary'
+                    msg.includes('Error') || msg.includes('error') || msg.includes('Lỗi') || msg.includes('lỗi') ? 'bg-error-container text-error' : 'bg-primary-fixed text-primary'
                 }`}>
                     {msg}
                 </div>
@@ -120,10 +120,10 @@ export default function ProfilePage() {
             {/* Stats bento */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
                 {[
-                    { icon: 'history_edu', iconBg: 'bg-primary-fixed text-primary', label: 'Total Reviews', value: stats.totalReviews, badge: 'All time' },
-                    { icon: 'pending_actions', iconBg: 'bg-tertiary-fixed text-tertiary', iconFill: true, label: 'Due Today', value: stats.dueCards, badge: 'SM-2' },
-                    { icon: 'quiz', iconBg: 'bg-secondary-container text-secondary', label: 'Quiz Attempts', value: stats.quizCount, badge: 'Total' },
-                    { icon: 'analytics', iconBg: 'bg-surface-container-high text-on-surface-variant', label: 'Avg Quiz Score', value: `${stats.avgScore}/100`, badge: 'Average' },
+                    { icon: 'history_edu', iconBg: 'bg-primary-fixed text-primary', label: t('profile.total_reviews'), value: stats.totalReviews, badge: t('profile.all_time') },
+                    { icon: 'pending_actions', iconBg: 'bg-tertiary-fixed text-tertiary', iconFill: true, label: t('profile.due_today'), value: stats.dueCards, badge: t('profile.due_today_badge') },
+                    { icon: 'quiz', iconBg: 'bg-secondary-container text-secondary', label: t('profile.quiz_attempts'), value: stats.quizCount, badge: t('profile.total_badge') },
+                    { icon: 'analytics', iconBg: 'bg-surface-container-high text-on-surface-variant', label: t('profile.avg_quiz_score'), value: `${stats.avgScore}/100`, badge: t('profile.average_badge') },
                 ].map(({ icon, iconBg, iconFill, label, value, badge }) => (
                     <div key={label} className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10 flex flex-col justify-between hover:-translate-y-1 transition-transform ease-out-expo duration-300">
                         <div className="flex justify-between items-start mb-4">
@@ -146,19 +146,23 @@ export default function ProfilePage() {
                 {/* Flashcard Mastery */}
                 <div className="lg:col-span-2 bg-surface-container-lowest rounded-xl p-8 shadow-sm border border-outline-variant/10">
                     <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-xl font-bold font-headline">Flashcard Mastery</h2>
-                        <span className="text-sm font-bold text-primary">{progress.length} cards total</span>
+                        <h2 className="text-xl font-bold font-headline">{t('profile.flashcard_mastery')}</h2>
+                        <span className="text-sm font-bold text-primary">
+                            {t('profile.cards_total').replace('{count}', progress.length)}
+                        </span>
                     </div>
                     <div className="space-y-6">
                         {[
-                            { label: 'Mastered',  value: mastered,  color: 'from-primary to-primary-container', textColor: 'text-primary' },
-                            { label: 'Reviewing', value: reviewing, color: 'from-secondary to-secondary-container', textColor: 'text-secondary' },
-                            { label: 'Learning',  value: learning,  color: 'from-tertiary to-tertiary-container', textColor: 'text-tertiary' },
+                            { label: t('home.mastered'),  value: mastered,  color: 'from-primary to-primary-container', textColor: 'text-primary' },
+                            { label: t('home.reviewing'), value: reviewing, color: 'from-secondary to-secondary-container', textColor: 'text-secondary' },
+                            { label: t('home.learning'),  value: learning,  color: 'from-tertiary to-tertiary-container', textColor: 'text-tertiary' },
                         ].map(({ label, value, color, textColor }) => (
                             <div key={label}>
                                 <div className="flex justify-between mb-2">
                                     <span className="text-sm font-bold text-on-surface">{label}</span>
-                                    <span className={`text-sm font-bold ${textColor}`}>{value} cards</span>
+                                    <span className={`text-sm font-bold ${textColor}`}>
+                                        {t('profile.cards_count').replace('{count}', value)}
+                                    </span>
                                 </div>
                                 <div className="w-full h-2.5 bg-surface-variant rounded-full overflow-hidden">
                                     <div className={`h-full bg-gradient-to-r ${color} rounded-full transition-all duration-700`}
@@ -175,11 +179,11 @@ export default function ProfilePage() {
                     <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
                         <h3 className="font-headline font-bold text-lg mb-4 flex items-center gap-2">
                             <span className="material-symbols-outlined text-primary">manage_accounts</span>
-                            Profile Settings
+                            {t('profile.profile_settings')}
                         </h3>
                         <div className="space-y-4">
                             <div>
-                                <label className="text-xs font-bold text-outline uppercase tracking-wider block mb-1">Username</label>
+                                <label className="text-xs font-bold text-outline uppercase tracking-wider block mb-1">{t('common.username')}</label>
                                 <input
                                     value={form.username}
                                     onChange={e => setForm({ ...form, username: e.target.value })}
@@ -190,20 +194,20 @@ export default function ProfilePage() {
                             {editMode && (
                                 <button onClick={handleSaveProfile} disabled={saving}
                                         className="w-full py-3 bg-primary text-on-primary rounded-DEFAULT font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all disabled:opacity-50">
-                                    {saving ? 'Saving...' : 'Save Changes'}
+                                    {saving ? t('common.loading') : t('profile.save_changes')}
                                 </button>
                             )}
                         </div>
                     </div>
 
-                    {/* NEW: App Language Switcher */}
+                    {/* App Language Switcher */}
                     <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
                         <h3 className="font-headline font-bold text-lg mb-4 flex items-center gap-2">
                             <span className="material-symbols-outlined text-secondary">language</span>
-                            App Language
+                            {t('profile.app_language')}
                         </h3>
                         <p className="text-xs text-on-surface-variant mb-4 font-medium">
-                            Chọn ngôn ngữ mẹ đẻ của bạn để tùy chỉnh nội dung học TOEIC.
+                            {t('profile.lang_desc')}
                         </p>
                         <div className="grid grid-cols-2 gap-2">
                             {locales.map((l) => (
@@ -234,26 +238,26 @@ export default function ProfilePage() {
                     <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
                         <h3 className="font-headline font-bold text-lg mb-4 flex items-center gap-2">
                             <span className="material-symbols-outlined text-tertiary">lock</span>
-                            Change Password
+                            {t('profile.password_change')}
                         </h3>
                         <div className="space-y-3">
                             <input
                                 type="password"
-                                placeholder="Current password"
+                                placeholder={t('profile.current_password')}
                                 value={pwForm.oldPassword}
                                 onChange={e => setPwForm({ ...pwForm, oldPassword: e.target.value })}
                                 className="w-full px-4 py-3 bg-surface-container-low rounded-DEFAULT text-sm border border-outline-variant/20 focus:ring-2 focus:ring-primary outline-none"
                             />
                             <input
                                 type="password"
-                                placeholder="New password (min 6 chars)"
+                                placeholder={t('profile.new_password')}
                                 value={pwForm.newPassword}
                                 onChange={e => setPwForm({ ...pwForm, newPassword: e.target.value })}
                                 className="w-full px-4 py-3 bg-surface-container-low rounded-DEFAULT text-sm border border-outline-variant/20 focus:ring-2 focus:ring-primary outline-none"
                             />
                             <button onClick={handleChangePassword} disabled={saving}
                                     className="w-full py-3 border-2 border-tertiary text-tertiary rounded-DEFAULT font-bold text-sm hover:bg-tertiary-fixed transition-all disabled:opacity-50">
-                                {saving ? 'Updating...' : 'Update Password'}
+                                {saving ? t('common.loading') : t('profile.update_password')}
                             </button>
                         </div>
                     </div>

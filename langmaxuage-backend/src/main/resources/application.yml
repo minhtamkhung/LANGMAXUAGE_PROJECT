@@ -22,6 +22,21 @@ spring:
   flyway:
     enabled: true
 
+  # ── Email (Spring Mail) ─────────────────────────────────
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:your_email@gmail.com}
+    password: ${MAIL_PASSWORD:your_app_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        debug: false
+
   # ── Redis ───────────────────────────────────────────────────
   data:
     redis:
@@ -48,7 +63,12 @@ app:
     api-key: ${CLOUDINARY_API_KEY:your_api_key}
     api-secret: ${CLOUDINARY_API_SECRET:your_api_secret}
     folder: toeic-flashcard   # tất cả ảnh upload vào folder này
-
   # ── CORS ────────────────────────────────────────────────────
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:3000}  # Vite dev server
+  # ── OTP ─────────────────────────────────────────────────
+  otp:
+    ttl-minutes: 5   # OTP hết hạn sau 5 phút
+  # ── Mail sender ─────────────────────────────────────────
+
+

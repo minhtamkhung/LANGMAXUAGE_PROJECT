@@ -16,7 +16,7 @@ target/
 
 # ── Environment & secrets — KHÔNG BAO GIỜ commit ──────────────
 application-dev.yml
-application-local.yml
+application.yml
 .env
 *.env
 

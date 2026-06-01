@@ -51,7 +51,7 @@ public class QuizServiceImpl implements QuizService {
                 .orElseThrow(() -> AppException.notFound("Không tìm thấy topic"));
 
         List<Flashcard> allCards = flashcardRepository
-                .findByTopicId(topic.getId(), PageRequest.of(0, 200)).getContent();
+                .findByTopicId(topic.getId(), currentUserId, PageRequest.of(0, 200)).getContent();
 
         if (allCards.isEmpty()) throw AppException.badRequest("Topic không có flashcard", "TOPIC_EMPTY");
 

@@ -3,6 +3,7 @@ package com.dmt.toeicapp.flashcard.service.impl;
 import com.dmt.toeicapp.common.aop.Auditable;
 import com.dmt.toeicapp.common.exception.AppException;
 import com.dmt.toeicapp.common.security.SecurityUtils;
+import com.dmt.toeicapp.flashcard.dto.BulkImportResult;
 import com.dmt.toeicapp.flashcard.dto.FlashcardRequest;
 import com.dmt.toeicapp.flashcard.dto.FlashcardResponse;
 import com.dmt.toeicapp.flashcard.entity.Flashcard;
@@ -23,6 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,7 +64,8 @@ public class FlashcardServiceImpl implements FlashcardService {
                                               boolean includeAllLocales,
                                               Pageable pageable) {
         Topic topic = findTopicAndCheckAccess(topicId);
-        Page<Flashcard> page = flashcardRepository.findByTopicId(topic.getId(), pageable);
+        Long userId = SecurityUtils.getCurrentUserId();
+        Page<Flashcard> page = flashcardRepository.findByTopicId(topic.getId(), userId, pageable);
         return applyTranslationsToPage(page, locale, includeAllLocales);
     }
 
@@ -98,8 +104,8 @@ public class FlashcardServiceImpl implements FlashcardService {
         Long  currentUserId = SecurityUtils.getCurrentUserId();
         Topic topic         = findTopicAndCheckAccess(request.topicId());
 
-        if (flashcardRepository.existsByWordAndTopicIdAndActiveTrue(
-                request.word(), topic.getId())) {
+        if (flashcardRepository.existsByWordAndTopicIdAndUser(
+                request.word(), topic.getId(), currentUserId)) {
             throw AppException.conflict(
                     "Từ '" + request.word() + "' đã tồn tại trong topic này",
                     "FLASHCARD_WORD_DUPLICATE");
@@ -124,10 +130,11 @@ public class FlashcardServiceImpl implements FlashcardService {
     public FlashcardResponse update(Long id, FlashcardRequest request) {
         Flashcard card  = findCardAndCheckOwnership(id);
         Topic     topic = findTopicAndCheckAccess(request.topicId());
+        Long  currentUserId = SecurityUtils.getCurrentUserId();
 
         boolean wordChanged = !card.getWord().equalsIgnoreCase(request.word());
-        if (wordChanged && flashcardRepository.existsByWordAndTopicIdAndActiveTrue(
-                request.word(), topic.getId())) {
+        if (wordChanged && flashcardRepository.existsByWordAndTopicIdAndUser(
+                request.word(), topic.getId(), currentUserId)) {
             throw AppException.conflict(
                     "Từ '" + request.word() + "' đã tồn tại trong topic này",
                     "FLASHCARD_WORD_DUPLICATE");
@@ -150,6 +157,131 @@ public class FlashcardServiceImpl implements FlashcardService {
         Flashcard card = findCardAndCheckOwnership(id);
         card.setActive(false);
         flashcardRepository.save(card);
+    }
+
+    // ── Bulk Import CSV ───────────────────────────────────────
+
+    @Override
+    @Transactional
+    public BulkImportResult bulkImport(Long topicId, MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw AppException.badRequest("File CSV không được rỗng", "EMPTY_FILE");
+        }
+
+        String filename = file.getOriginalFilename();
+        if (filename == null || (!filename.endsWith(".csv") && !filename.endsWith(".txt"))) {
+            throw AppException.badRequest("Chỉ hỗ trợ file .csv hoặc .txt", "INVALID_FILE_TYPE");
+        }
+
+        Topic topic          = findTopicAndCheckAccess(topicId);
+        Long  currentUserId  = SecurityUtils.getCurrentUserId();
+        User  owner          = userRepository.getReferenceById(currentUserId);
+
+        int successCount = 0;
+        int failCount    = 0;
+        List<String> errors = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+
+            String line;
+            int rowNum = 0;
+
+            while ((line = reader.readLine()) != null) {
+                rowNum++;
+
+                // Bỏ qua dòng header (dòng đầu tiên) và dòng trống
+                if (rowNum == 1 || line.isBlank()) continue;
+
+                // Tách bằng dấu phẩy — hỗ trợ quote: "word, with comma"
+                String[] cols = parseCsvLine(line);
+
+                // Bắt buộc: cột 0 = word, cột 2 = definition
+                if (cols.length < 3) {
+                    errors.add("Dòng " + rowNum + ": Thiếu cột (cần ít nhất word, pronunciation, definition)");
+                    failCount++;
+                    continue;
+                }
+
+                String word       = cols[0].trim();
+                String pronun     = cols.length > 1 ? cols[1].trim() : "";
+                String definition = cols[2].trim();
+                String example    = cols.length > 3 ? cols[3].trim() : "";
+                String diffStr    = cols.length > 4 ? cols[4].trim().toUpperCase() : "MEDIUM";
+
+                if (word.isEmpty()) {
+                    errors.add("Dòng " + rowNum + ": Từ (cột 1) không được để trống");
+                    failCount++;
+                    continue;
+                }
+                if (definition.isEmpty()) {
+                    errors.add("Dòng " + rowNum + ": Định nghĩa (cột 3) không được để trống");
+                    failCount++;
+                    continue;
+                }
+
+                // Validate độ khó
+                Flashcard.Difficulty difficulty;
+                try {
+                    difficulty = diffStr.isEmpty()
+                            ? Flashcard.Difficulty.MEDIUM
+                            : Flashcard.Difficulty.valueOf(diffStr);
+                } catch (IllegalArgumentException e) {
+                    errors.add("Dòng " + rowNum + ": Độ khó '" + diffStr + "' không hợp lệ (EASY/MEDIUM/HARD)");
+                    failCount++;
+                    continue;
+                }
+
+                // Bỏ qua nếu từ đã tồn tại (không fail toàn bộ batch)
+                if (flashcardRepository.existsByWordAndTopicIdAndUser(word, topic.getId(), currentUserId)) {
+                    errors.add("Dòng " + rowNum + ": Từ '" + word + "' đã tồn tại trong topic — bỏ qua");
+                    failCount++;
+                    continue;
+                }
+
+                Flashcard card = Flashcard.builder()
+                        .topic(topic)
+                        .createdBy(owner)
+                        .word(word)
+                        .pronunciation(pronun)
+                        .definition(definition)
+                        .exampleSentence(example)
+                        .difficulty(difficulty)
+                        .build();
+
+                flashcardRepository.save(card);
+                successCount++;
+            }
+
+        } catch (Exception e) {
+            throw AppException.badRequest("Không thể đọc file CSV: " + e.getMessage(), "CSV_PARSE_ERROR");
+        }
+
+        return new BulkImportResult(successCount, failCount, errors);
+    }
+
+    /**
+     * Parse 1 dòng CSV đơn giản — hỗ trợ field được bao bọc bởi double-quote.
+     * Ví dụ: negotiate,/nɪˈɡoʊ/,"Đàm phán, thương lượng",He negotiated.,MEDIUM
+     */
+    private String[] parseCsvLine(String line) {
+        List<String> fields = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        boolean inQuote = false;
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"') {
+                inQuote = !inQuote;
+            } else if (c == ',' && !inQuote) {
+                fields.add(sb.toString());
+                sb.setLength(0);
+            } else {
+                sb.append(c);
+            }
+        }
+        fields.add(sb.toString());
+        return fields.toArray(new String[0]);
     }
 
     @Override

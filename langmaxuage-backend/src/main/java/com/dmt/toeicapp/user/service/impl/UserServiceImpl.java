@@ -50,6 +50,15 @@ public class UserServiceImpl implements UserService {
         if (request.avatarUrl() != null) {
             user.setAvatarUrl(request.avatarUrl());
         }
+        if (request.onboarded() != null) {
+            user.setOnboarded(request.onboarded());
+        }
+        if (request.targetScore() != null) {
+            user.setTargetScore(request.targetScore());
+        }
+        if (request.dailyGoalMinutes() != null) {
+            user.setDailyGoalMinutes(request.dailyGoalMinutes());
+        }
 
         return userMapper.toResponse(userRepository.save(user));
     }

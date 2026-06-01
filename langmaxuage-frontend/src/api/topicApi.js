@@ -6,6 +6,7 @@ const topicApi = {
     create:    (data)                  => api.post('/topics', data),
     update:    (id, data)              => api.put(`/topics/${id}`, data),
     delete:    (id)                    => api.delete(`/topics/${id}`),
+    generateWithAi: (prompt)           => api.post('/ai/generate-topic', { prompt }),
 }
 
 export default topicApi

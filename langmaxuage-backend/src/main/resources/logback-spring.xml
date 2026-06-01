@@ -20,7 +20,9 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_DIR}/archived/toeic-app-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>30</maxHistory> </rollingPolicy>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
     </appender>
 
     <appender name="AOP_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -31,10 +33,12 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_DIR}/archived/toeic-aop-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>90</maxHistory> </rollingPolicy>
+            <maxHistory>90</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
     </appender>
 
-    <logger name="com.dmt.toeicapp.common.aspect" level="DEBUG" additivity="true">
+    <logger name="com.dmt.toeicapp.common.aop" level="INFO" additivity="false">
         <appender-ref ref="AOP_FILE" />
     </logger>
 

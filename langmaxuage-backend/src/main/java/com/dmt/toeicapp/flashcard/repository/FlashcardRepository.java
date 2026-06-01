@@ -16,6 +16,7 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
     @Query("""
             SELECT f FROM Flashcard f
             WHERE f.active = true
+              AND (f.createdBy.id = :userId OR f.createdBy.role = com.dmt.toeicapp.user.entity.User.Role.ADMIN)
               AND (f.topic.system = true OR f.topic.createdBy.id = :userId)
             ORDER BY f.createdAt DESC
             """)
@@ -26,13 +27,23 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
             SELECT f FROM Flashcard f
             WHERE f.active = true
               AND f.topic.id = :topicId
+              AND (f.createdBy.id = :userId OR f.createdBy.role = com.dmt.toeicapp.user.entity.User.Role.ADMIN)
             ORDER BY f.createdAt DESC
             """)
-    Page<Flashcard> findByTopicId(@Param("topicId") Long topicId, Pageable pageable);
+    Page<Flashcard> findByTopicId(@Param("topicId") Long topicId, @Param("userId") Long userId, Pageable pageable);
 
     // Tìm flashcard active theo id — tránh lấy card đã bị soft delete
     Optional<Flashcard> findByIdAndActiveTrue(Long id);
 
     // Kiểm tra word trùng trong cùng một topic (tránh duplicate)
     boolean existsByWordAndTopicIdAndActiveTrue(String word, Long topicId);
+
+    @Query("""
+            SELECT COUNT(f) > 0 FROM Flashcard f
+            WHERE f.active = true
+              AND f.topic.id = :topicId
+              AND LOWER(f.word) = LOWER(:word)
+              AND (f.createdBy.id = :userId OR f.createdBy.role = com.dmt.toeicapp.user.entity.User.Role.ADMIN)
+            """)
+    boolean existsByWordAndTopicIdAndUser(@Param("word") String word, @Param("topicId") Long topicId, @Param("userId") Long userId);
 }

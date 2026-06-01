@@ -9,5 +9,8 @@ public record UserResponse(
         String         role,
         String         avatarUrl,
         boolean        isActive,
-        OffsetDateTime createdAt
+        OffsetDateTime createdAt,
+        boolean        onboarded,
+        Integer        targetScore,
+        int            dailyGoalMinutes
 ) {}

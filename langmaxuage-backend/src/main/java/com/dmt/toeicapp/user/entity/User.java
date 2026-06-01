@@ -40,6 +40,17 @@ public class User {
     @Builder.Default
     private boolean active = true;
 
+    @Column(name = "is_onboarded", nullable = false)
+    @Builder.Default
+    private boolean onboarded = false;
+
+    @Column(name = "target_score")
+    private Integer targetScore;
+
+    @Column(name = "daily_goal_minutes", nullable = false)
+    @Builder.Default
+    private int dailyGoalMinutes = 5;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;

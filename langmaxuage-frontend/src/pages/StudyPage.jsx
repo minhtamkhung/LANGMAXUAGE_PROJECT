@@ -10,7 +10,7 @@ const LANG_LABELS = {
 
 export default function StudyPage() {
     const navigate                  = useNavigate()
-    const { locale }                = useLanguage()
+    const { locale, t }             = useLanguage()
 
     const [progressList, setProgressList] = useState([]) // Chứa mảng ProgressResponse
     const [index, setIndex]               = useState(0)
@@ -46,14 +46,14 @@ export default function StudyPage() {
         try {
             // Sử dụng card.id (id của flashcard) thay vì id của progress record
             await progressApi.review({ flashcardId: card.id, quality }, locale)
-            setFeedback(quality >= 3 ? '✓ Memorized' : '↺ See you soon')
+            setFeedback(quality >= 3 ? t('study.memorized') : t('study.see_you_soon'))
 
             setTimeout(() => {
                 setFeedback('')
                 setCardLang(locale)
                 setIndex(i => i + 1)
             }, 700)
-        } catch { setFeedback('Error') }
+        } catch { setFeedback(t('common.error')) }
     }
 
     const getContent = (c) => {
@@ -81,8 +81,8 @@ export default function StudyPage() {
         <Layout>
             <div className="max-w-4xl mx-auto">
                 <header className="mb-10">
-                    <h1 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight mb-2">Daily Review</h1>
-                    <p className="text-on-surface-variant">Ôn tập dựa trên thuật toán SM-2.</p>
+                    <h1 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight mb-2">{t('study.title')}</h1>
+                    <p className="text-on-surface-variant">{t('study.flip')}</p>
                 </header>
 
                 {loading ? (
@@ -92,19 +92,24 @@ export default function StudyPage() {
                 ) : progressList.length === 0 ? (
                     <div className="text-center mt-20 bg-surface-container-low p-12 rounded-[2rem] border border-dashed border-outline-variant">
                         <span className="material-symbols-outlined text-6xl text-primary mb-4">task_alt</span>
-                        <h2 className="text-2xl font-bold font-headline mb-2">You're all caught up!</h2>
-                        <button onClick={() => navigate('/topics')} className="bg-primary text-white px-8 py-3 rounded-full font-bold">Explore Topics</button>
+                        <h2 className="text-2xl font-bold font-headline mb-2">{t('study.all_caught_up_title')}</h2>
+                        <button onClick={() => navigate('/topics')} className="bg-primary text-white px-8 py-3 rounded-full font-bold">{t('study.explore_topics')}</button>
                     </div>
                 ) : index >= progressList.length ? (
                     <div className="text-center mt-20">
-                        <h2 className="font-headline text-3xl font-bold mb-2">Session Complete!</h2>
-                        <button onClick={() => navigate('/home')} className="bg-primary text-white px-10 py-4 rounded-full font-bold">Back to Dashboard</button>
+                        <h2 className="font-headline text-3xl font-bold mb-2">{t('study.session_complete')}</h2>
+                        <button onClick={() => navigate('/home')} className="bg-primary text-white px-10 py-4 rounded-full font-bold">{t('study.back_to_dashboard')}</button>
                     </div>
                 ) : (
                     <>
                         <div className="mb-8">
                             <div className="flex justify-between text-xs font-bold text-outline uppercase mb-2">
-                                <span>Card {index + 1} of {progressList.length}</span>
+                                <span>
+                                    {t('study.card_indicator')
+                                        .replace('{current}', index + 1)
+                                        .replace('{total}', progressList.length)
+                                    }
+                                </span>
                                 <span>{feedback}</span>
                             </div>
                             <div className="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
@@ -154,14 +159,14 @@ export default function StudyPage() {
 
                         <div className="flex flex-col items-center gap-6">
                             {!flipped ? (
-                                <p className="text-outline text-sm font-bold animate-pulse">LẬT THẺ ĐỂ ĐÁNH GIÁ</p>
+                                <p className="text-outline text-sm font-bold animate-pulse">{t('study.flip_prompt')}</p>
                             ) : (
                                 <div className="grid grid-cols-4 gap-3 w-full">
                                     {[
-                                        { q: 0, label: 'Forgot', icon: 'replay', color: 'text-error' },
-                                        { q: 3, label: 'Hard', icon: 'sentiment_neutral', color: 'text-tertiary' },
-                                        { q: 4, label: 'Good', icon: 'sentiment_satisfied', color: 'text-secondary' },
-                                        { q: 5, label: 'Easy', icon: 'auto_awesome', color: 'text-primary' },
+                                        { q: 0, label: t('study.forgot_btn'), icon: 'replay', color: 'text-error' },
+                                        { q: 3, label: t('study.hard'), icon: 'sentiment_neutral', color: 'text-tertiary' },
+                                        { q: 4, label: t('study.good'), icon: 'sentiment_satisfied', color: 'text-secondary' },
+                                        { q: 5, label: t('study.easy'), icon: 'auto_awesome', color: 'text-primary' },
                                     ].map(({ q, label, icon, color }) => (
                                         <button key={q} onClick={() => handleQuality(q)} className={`flex flex-col items-center p-4 rounded-2xl bg-surface-container-lowest border-2 shadow-sm ${color}`}>
                                             <span className="material-symbols-outlined text-2xl">{icon}</span>
@@ -176,4 +181,4 @@ export default function StudyPage() {
             </div>
         </Layout>
     )
-}
+}
