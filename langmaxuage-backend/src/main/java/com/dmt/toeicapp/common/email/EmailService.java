@@ -21,25 +21,58 @@ public class EmailService {
     private String fromEmail;
 
     /**
+     * [FIX #9] Thay color-as-type bằng EmailType enum.
+     * Trước đây: buildOtpHtml() nhận accentColor và dùng accentColor.startsWith("#e05")
+     * để phân biệt loại email → rất fragile.
+     * Bây giờ: mỗi loại email có config rõ ràng qua EmailType enum.
+     */
+    public enum EmailType {
+        REGISTRATION(
+                "🔐 Mã xác thực OTP — TOEIC Sanctuary",
+                "đăng ký tài khoản",
+                "📚",
+                "Xác thực tài khoản của bạn",
+                "linear-gradient(135deg,#6c63ff,#4a90d9)",
+                "#6c63ff",
+                "#f0f4ff"
+        ),
+        PASSWORD_RESET(
+                "🔑 Đặt lại mật khẩu — TOEIC Sanctuary",
+                "đặt lại mật khẩu",
+                "🔑",
+                "Đặt lại mật khẩu của bạn",
+                "linear-gradient(135deg,#e05c2a,#f09b3a)",
+                "#e05c2a",
+                "#fff4f0"
+        );
+
+        final String subject;
+        final String action;
+        final String icon;
+        final String subtitle;
+        final String headerGradient;
+        final String accentColor;
+        final String digitBg;
+
+        EmailType(String subject, String action, String icon, String subtitle,
+                  String headerGradient, String accentColor, String digitBg) {
+            this.subject        = subject;
+            this.action         = action;
+            this.icon           = icon;
+            this.subtitle       = subtitle;
+            this.headerGradient = headerGradient;
+            this.accentColor    = accentColor;
+            this.digitBg        = digitBg;
+        }
+    }
+
+    /**
      * Gửi email OTP (async — không block luồng xử lý chính).
      * Bật @EnableAsync trong ToeicApplication để dùng @Async.
      */
     @Async
     public void sendOtpEmail(String toEmail, String otp) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom(fromEmail);
-            helper.setTo(toEmail);
-            helper.setSubject("🔐 Mã xác thực OTP — TOEIC Sanctuary");
-            helper.setText(buildOtpHtml(otp, "đăng ký tài khoản", "#6c63ff", "#f0f4ff"), true);
-
-            mailSender.send(message);
-            log.info("Đã gửi OTP đăng ký tới email: {}", toEmail);
-        } catch (MessagingException e) {
-            log.error("Lỗi khi gửi email OTP tới {}: {}", toEmail, e.getMessage());
-        }
+        sendEmail(toEmail, otp, EmailType.REGISTRATION);
     }
 
     /**
@@ -47,25 +80,33 @@ public class EmailService {
      */
     @Async
     public void sendPasswordResetEmail(String toEmail, String otp) {
+        sendEmail(toEmail, otp, EmailType.PASSWORD_RESET);
+    }
+
+    // ── Private helpers ───────────────────────────────────────────────────────
+
+    private void sendEmail(String toEmail, String otp, EmailType type) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setFrom(fromEmail);
             helper.setTo(toEmail);
-            helper.setSubject("🔑 Đặt lại mật khẩu — TOEIC Sanctuary");
-            helper.setText(buildOtpHtml(otp, "đặt lại mật khẩu", "#e05c2a", "#fff4f0"), true);
+            helper.setSubject(type.subject);
+            helper.setText(buildOtpHtml(otp, type), true);
 
             mailSender.send(message);
-            log.info("Đã gửi OTP đặt lại mật khẩu tới email: {}", toEmail);
+            log.info("Đã gửi {} OTP tới email: {}", type.name(), toEmail);
         } catch (MessagingException e) {
-            log.error("Lỗi khi gửi email reset password tới {}: {}", toEmail, e.getMessage());
+            log.error("Lỗi khi gửi email {} tới {}: {}", type.name(), toEmail, e.getMessage());
         }
     }
 
-    // ── HTML template ─────────────────────────────────────────────────────────
-
-    private String buildOtpHtml(String otp, String action, String accentColor, String digitBg) {
+    /**
+     * Build HTML template cho OTP email.
+     * Nhận EmailType thay vì color string — loại bỏ color-as-type anti-pattern.
+     */
+    private String buildOtpHtml(String otp, EmailType type) {
         StringBuilder digits = new StringBuilder();
         for (char c : otp.toCharArray()) {
             digits.append(
@@ -78,21 +119,13 @@ public class EmailService {
                   "font-size:28px;" +
                   "font-weight:700;" +
                   "color:#1a1a2e;" +
-                  "background:" + digitBg + ";" +
-                  "border:2px solid " + accentColor + ";" +
+                  "background:" + type.digitBg + ";" +
+                  "border:2px solid " + type.accentColor + ";" +
                   "border-radius:8px;" +
                 "\">" + c + "</span>" +
                 "</td>"
             );
         }
-
-        // Gradient header: đổi màu theo loại action
-        String headerGradient = accentColor.startsWith("#e05")
-            ? "linear-gradient(135deg,#e05c2a,#f09b3a)"  // cam — reset password
-            : "linear-gradient(135deg,#6c63ff,#4a90d9)"; // tím — đăng ký
-
-        String icon = accentColor.startsWith("#e05") ? "🔑" : "📚";
-        String subtitle = accentColor.startsWith("#e05") ? "Đặt lại mật khẩu của bạn" : "Xác thực tài khoản của bạn";
 
         return """
             <!DOCTYPE html>
@@ -153,7 +186,7 @@ public class EmailService {
               </table>
             </body>
             </html>
-            """.formatted(headerGradient, icon, subtitle, action, digits.toString(), accentColor);
+            """.formatted(type.headerGradient, type.icon, type.subtitle,
+                          type.action, digits.toString(), type.accentColor);
     }
 }
-

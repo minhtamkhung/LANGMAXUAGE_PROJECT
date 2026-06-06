@@ -2,8 +2,8 @@ import api from './axiosInstance'
 
 const progressApi = {
     // Lấy tổng tiến độ — truyền locale để BE map đúng ngôn ngữ hiển thị
-    getMyProgress: (locale = 'en') =>
-        api.get('/progress/me', { params: { locale } }),
+    getMyProgress: (locale = 'en', params = { page: 0, size: 1000 }) =>
+        api.get('/progress/me', { params: { locale, ...params } }),
 
     // Lấy cards đến hạn ôn tập — truyền locale để lấy định nghĩa đã dịch
     getDueCards:   (locale = 'en') =>

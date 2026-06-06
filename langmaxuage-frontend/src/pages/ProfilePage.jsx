@@ -23,7 +23,8 @@ export default function ProfilePage() {
         // Load progress stats
         progressApi.getMyProgress()
             .then(r => {
-                const list = r.data.data || []
+                const data = r.data.data
+                const list = Array.isArray(data) ? data : (data?.content || [])
                 setProgress(list)
                 const totalReviews = list.reduce((s, p) => s + (p.reviewCount || 0), 0)
                 setStats(prev => ({ ...prev, totalReviews }))

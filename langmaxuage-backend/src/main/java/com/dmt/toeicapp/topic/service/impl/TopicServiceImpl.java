@@ -1,5 +1,6 @@
 package com.dmt.toeicapp.topic.service.impl;
 
+import com.dmt.toeicapp.common.constant.AppConstants;
 import com.dmt.toeicapp.common.exception.AppException;
 import com.dmt.toeicapp.common.security.SecurityUtils;
 import com.dmt.toeicapp.i18n.entity.TopicTranslation;
@@ -29,7 +30,7 @@ public class TopicServiceImpl implements TopicService {
     private final TopicMapper                topicMapper;
     private final TopicTranslationRepository translationRepository;
 
-    private static final String DEFAULT_LOCALE = "en";
+
 
     @Override
     @Transactional(readOnly = true)
@@ -135,7 +136,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     private boolean isDefaultLocale(String locale) {
-        return locale == null || DEFAULT_LOCALE.equalsIgnoreCase(locale);
+        return locale == null || AppConstants.DEFAULT_LOCALE.equalsIgnoreCase(locale);
     }
 
     private Topic findAndCheckAccess(Long id) {

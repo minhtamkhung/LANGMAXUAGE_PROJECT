@@ -1,6 +1,7 @@
 package com.dmt.toeicapp.flashcard.service.impl;
 
 import com.dmt.toeicapp.common.aop.Auditable;
+import com.dmt.toeicapp.common.constant.AppConstants;
 import com.dmt.toeicapp.common.exception.AppException;
 import com.dmt.toeicapp.common.security.SecurityUtils;
 import com.dmt.toeicapp.flashcard.dto.BulkImportResult;
@@ -24,8 +25,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +48,6 @@ public class FlashcardServiceImpl implements FlashcardService {
     private final CloudinaryService cloudinaryService;
     private final FlashcardTranslationRepository translationRepository;
 
-    private static final String DEFAULT_LOCALE = "en";
 
     // ── Read methods ──────────────────────────────────────────
 
@@ -173,41 +177,46 @@ public class FlashcardServiceImpl implements FlashcardService {
             throw AppException.badRequest("Chỉ hỗ trợ file .csv hoặc .txt", "INVALID_FILE_TYPE");
         }
 
-        Topic topic          = findTopicAndCheckAccess(topicId);
-        Long  currentUserId  = SecurityUtils.getCurrentUserId();
-        User  owner          = userRepository.getReferenceById(currentUserId);
+        Topic topic         = findTopicAndCheckAccess(topicId);
+        Long  currentUserId = SecurityUtils.getCurrentUserId();
+        User  owner         = userRepository.getReferenceById(currentUserId);
 
         int successCount = 0;
         int failCount    = 0;
         List<String> errors = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+        // [FIX #10] Dùng Apache Commons CSV thay thế custom parser.
+        // CSVFormat.DEFAULT tự xử lý:
+        //   - Escaped quotes ("") bên trong field
+        //   - Newline bên trong quoted field
+        //   - BOM (ï»¿) khi withBOMInput(true)
+        CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+                .setHeader()                 // dòng đầu tiên là header
+                .setSkipHeaderRecord(true)   // bỏ qua header khi iterate
+                .setIgnoreEmptyLines(true)
+                .setTrim(true)
+                .setIgnoreSurroundingSpaces(true)
+                .build();
 
-            String line;
-            int rowNum = 0;
-
-            while ((line = reader.readLine()) != null) {
+        try (
+            Reader reader    = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
+            CSVParser parser = new CSVParser(reader, csvFormat)
+        ) {
+            int rowNum = 1; // header đã được skip, bắt đầu từ data row 2
+            for (CSVRecord record : parser) {
                 rowNum++;
 
-                // Bỏ qua dòng header (dòng đầu tiên) và dòng trống
-                if (rowNum == 1 || line.isBlank()) continue;
-
-                // Tách bằng dấu phẩy — hỗ trợ quote: "word, with comma"
-                String[] cols = parseCsvLine(line);
-
-                // Bắt buộc: cột 0 = word, cột 2 = definition
-                if (cols.length < 3) {
+                if (record.size() < 3) {
                     errors.add("Dòng " + rowNum + ": Thiếu cột (cần ít nhất word, pronunciation, definition)");
                     failCount++;
                     continue;
                 }
 
-                String word       = cols[0].trim();
-                String pronun     = cols.length > 1 ? cols[1].trim() : "";
-                String definition = cols[2].trim();
-                String example    = cols.length > 3 ? cols[3].trim() : "";
-                String diffStr    = cols.length > 4 ? cols[4].trim().toUpperCase() : "MEDIUM";
+                String word       = record.get(0).trim();
+                String pronun     = record.size() > 1 ? record.get(1).trim() : "";
+                String definition = record.get(2).trim();
+                String example    = record.size() > 3 ? record.get(3).trim() : "";
+                String diffStr    = record.size() > 4 ? record.get(4).trim().toUpperCase() : "MEDIUM";
 
                 if (word.isEmpty()) {
                     errors.add("Dòng " + rowNum + ": Từ (cột 1) không được để trống");
@@ -220,7 +229,6 @@ public class FlashcardServiceImpl implements FlashcardService {
                     continue;
                 }
 
-                // Validate độ khó
                 Flashcard.Difficulty difficulty;
                 try {
                     difficulty = diffStr.isEmpty()
@@ -232,7 +240,6 @@ public class FlashcardServiceImpl implements FlashcardService {
                     continue;
                 }
 
-                // Bỏ qua nếu từ đã tồn tại (không fail toàn bộ batch)
                 if (flashcardRepository.existsByWordAndTopicIdAndUser(word, topic.getId(), currentUserId)) {
                     errors.add("Dòng " + rowNum + ": Từ '" + word + "' đã tồn tại trong topic — bỏ qua");
                     failCount++;
@@ -253,35 +260,11 @@ public class FlashcardServiceImpl implements FlashcardService {
                 successCount++;
             }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw AppException.badRequest("Không thể đọc file CSV: " + e.getMessage(), "CSV_PARSE_ERROR");
         }
 
         return new BulkImportResult(successCount, failCount, errors);
-    }
-
-    /**
-     * Parse 1 dòng CSV đơn giản — hỗ trợ field được bao bọc bởi double-quote.
-     * Ví dụ: negotiate,/nɪˈɡoʊ/,"Đàm phán, thương lượng",He negotiated.,MEDIUM
-     */
-    private String[] parseCsvLine(String line) {
-        List<String> fields = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-        boolean inQuote = false;
-
-        for (int i = 0; i < line.length(); i++) {
-            char c = line.charAt(i);
-            if (c == '"') {
-                inQuote = !inQuote;
-            } else if (c == ',' && !inQuote) {
-                fields.add(sb.toString());
-                sb.setLength(0);
-            } else {
-                sb.append(c);
-            }
-        }
-        fields.add(sb.toString());
-        return fields.toArray(new String[0]);
     }
 
     @Override
@@ -403,7 +386,7 @@ public class FlashcardServiceImpl implements FlashcardService {
     }
 
     private boolean isDefaultLocale(String locale) {
-        return locale == null || DEFAULT_LOCALE.equalsIgnoreCase(locale);
+        return locale == null || AppConstants.DEFAULT_LOCALE.equalsIgnoreCase(locale);
     }
 
     private Flashcard findCardAndCheckAccess(Long id) {

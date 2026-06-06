@@ -452,19 +452,19 @@ export default function ManageFlashcardsPage() {
         Promise.all([
             topicApi.getById(topicId, locale),
             flashcardApi.getByTopic(topicId, locale, false, { page: 0, size: 200 }),
-            progressApi.getMyProgress(locale).catch(() => ({ data: { data: [] } })),
+            progressApi.getMyProgress(locale).catch(() => ({ data: { data: { content: [] } } })),
         ]).then(([tRes, fcRes, pRes]) => {
             setTopic(tRes.data.data)
             setCards(fcRes.data.data?.content || [])
             
             const pMap = {}
-            if (pRes?.data?.data) {
-                pRes.data.data.forEach(p => {
-                    if (p.flashcard?.id) {
-                        pMap[p.flashcard.id] = p
-                    }
-                })
-            }
+            const pData = pRes?.data?.data
+            const pList = Array.isArray(pData) ? pData : (pData?.content || [])
+            pList.forEach(p => {
+                if (p.flashcard?.id) {
+                    pMap[p.flashcard.id] = p
+                }
+            })
             setProgressMap(pMap)
         }).catch(() => setError('Không thể tải dữ liệu. Topic có thể không tồn tại.'))
           .finally(() => setPageLoading(false))
@@ -691,13 +691,13 @@ export default function ManageFlashcardsPage() {
                         progressApi.getMyProgress(locale)
                             .then(pRes => {
                                 const pMap = {}
-                                if (pRes?.data?.data) {
-                                    pRes.data.data.forEach(p => {
-                                        if (p.flashcard?.id) {
-                                            pMap[p.flashcard.id] = p
-                                        }
-                                    })
-                                }
+                                const pData = pRes?.data?.data
+                                const pList = Array.isArray(pData) ? pData : (pData?.content || [])
+                                pList.forEach(p => {
+                                    if (p.flashcard?.id) {
+                                        pMap[p.flashcard.id] = p
+                                    }
+                                })
                                 setProgressMap(pMap)
                             }).catch(() => {})
                     }}

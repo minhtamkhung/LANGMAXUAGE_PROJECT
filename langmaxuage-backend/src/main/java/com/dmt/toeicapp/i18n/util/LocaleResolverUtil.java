@@ -1,5 +1,6 @@
 package com.dmt.toeicapp.i18n.util;
 
+import com.dmt.toeicapp.common.constant.AppConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -18,7 +19,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  */
 public final class LocaleResolverUtil {
 
-    private static final String DEFAULT_LOCALE = "en";
     private static final String HEADER_NAME    = "Accept-Language";
 
     private LocaleResolverUtil() {}
@@ -33,18 +33,18 @@ public final class LocaleResolverUtil {
         try {
             ServletRequestAttributes attrs =
                     (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attrs == null) return DEFAULT_LOCALE;
+            if (attrs == null) return AppConstants.DEFAULT_LOCALE;
 
             HttpServletRequest request = attrs.getRequest();
             String header = request.getHeader(HEADER_NAME);
 
-            if (header == null || header.isBlank()) return DEFAULT_LOCALE;
+            if (header == null || header.isBlank()) return AppConstants.DEFAULT_LOCALE;
 
             // Lấy phần đầu, bỏ region code: 'vi-VN' → 'vi'
             return header.split("[,;-]")[0].trim().toLowerCase();
 
         } catch (Exception e) {
-            return DEFAULT_LOCALE;
+            return AppConstants.DEFAULT_LOCALE;
         }
     }
 
@@ -53,6 +53,6 @@ public final class LocaleResolverUtil {
      */
     public static String resolveLocale(String fallback) {
         String locale = resolveLocale();
-        return locale.equals(DEFAULT_LOCALE) ? fallback : locale;
+        return locale.equals(AppConstants.DEFAULT_LOCALE) ? fallback : locale;
     }
 }

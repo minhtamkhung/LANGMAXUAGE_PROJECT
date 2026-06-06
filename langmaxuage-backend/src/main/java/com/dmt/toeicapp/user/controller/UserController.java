@@ -28,7 +28,6 @@ public class UserController {
     @PatchMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> updateMe(
             @Valid @RequestBody UpdateProfileRequest request) {
-        System.out.println("🔥 HIT UPDATE PROFILE");
         return ResponseEntity.ok(
                 ApiResponse.ok(userService.updateMe(request), "Cập nhật profile thành công"));
     }

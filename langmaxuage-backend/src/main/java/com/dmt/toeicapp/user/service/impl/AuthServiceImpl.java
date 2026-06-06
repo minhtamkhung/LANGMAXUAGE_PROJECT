@@ -16,8 +16,6 @@ import com.dmt.toeicapp.user.repository.UserRepository;
 import com.dmt.toeicapp.user.service.AuthService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -34,18 +31,25 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    private final UserRepository      userRepository;
-    private final PasswordEncoder     passwordEncoder;
-    private final JwtUtil             jwtUtil;
-    private final StringRedisTemplate redisTemplate;
-    private final EmailService        emailService;
-    private final String              googleClientId;
-    private final long                otpTtlMinutes;
+    private final UserRepository         userRepository;
+    private final PasswordEncoder        passwordEncoder;
+    private final JwtUtil                jwtUtil;
+    private final StringRedisTemplate    redisTemplate;
+    private final EmailService           emailService;
+    private final GoogleIdTokenVerifier  googleIdTokenVerifier; // ← Singleton Bean, inject qua constructor
+    private final long                   otpTtlMinutes;
+    private final int                    otpMaxAttempts;
+    private final int                    sendOtpMaxPerHour;
 
-    private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
-    private static final String OTP_PREFIX           = "otp:";
-    private static final String PENDING_REG_PREFIX   = "pending_reg:";
-    private static final String PWD_RESET_OTP_PREFIX = "pwd_reset_otp:";
+    // ── Redis key prefixes ──────────────────────────────────────────────────────
+    private static final String REFRESH_TOKEN_PREFIX  = "refresh_token:";
+    private static final String OTP_PREFIX            = "otp:";
+    private static final String PENDING_REG_PREFIX    = "pending_reg:";
+    private static final String PWD_RESET_OTP_PREFIX  = "pwd_reset_otp:";
+    /** Đếm số lần nhập sai OTP (verify-otp / reset-password) */
+    private static final String OTP_ATTEMPTS_PREFIX   = "otp_attempts:";
+    /** Đếm số lần gửi OTP trong vòng 1 giờ (send-otp / forgot-password) */
+    private static final String SEND_OTP_RATE_PREFIX  = "send_otp_rate:";
 
     public AuthServiceImpl(
             UserRepository userRepository,
@@ -53,21 +57,29 @@ public class AuthServiceImpl implements AuthService {
             JwtUtil jwtUtil,
             StringRedisTemplate redisTemplate,
             EmailService emailService,
-            @Value("${app.google.client-id}") String googleClientId,
-            @Value("${app.otp.ttl-minutes:5}") long otpTtlMinutes) {
-        this.userRepository  = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil         = jwtUtil;
-        this.redisTemplate   = redisTemplate;
-        this.emailService    = emailService;
-        this.googleClientId  = googleClientId;
-        this.otpTtlMinutes   = otpTtlMinutes;
+            GoogleIdTokenVerifier googleIdTokenVerifier,      // ← inject Singleton Bean
+            @Value("${app.otp.ttl-minutes:5}") long otpTtlMinutes,
+            @Value("${app.rate-limit.otp-max-attempts:5}") int otpMaxAttempts,
+            @Value("${app.rate-limit.send-otp-max-per-hour:3}") int sendOtpMaxPerHour) {
+        this.userRepository        = userRepository;
+        this.passwordEncoder       = passwordEncoder;
+        this.jwtUtil               = jwtUtil;
+        this.redisTemplate         = redisTemplate;
+        this.emailService          = emailService;
+        this.googleIdTokenVerifier = googleIdTokenVerifier;
+        this.otpTtlMinutes         = otpTtlMinutes;
+        this.otpMaxAttempts        = otpMaxAttempts;
+        this.sendOtpMaxPerHour     = sendOtpMaxPerHour;
     }
 
     // ── Bước 1: Gửi OTP ──────────────────────────────────────────────────────
 
     @Override
     public void sendOtp(SendOtpRequest request) {
+        // ── [SECURITY] Rate limit: tối đa sendOtpMaxPerHour lần gửi/email/giờ ──
+        // Ngăn email bombing và information enumeration (biết email nào đã tồn tại)
+        checkSendOtpRateLimit(request.email());
+
         // Validate email/username chưa tồn tại
         if (userRepository.existsByEmail(request.email())) {
             throw AppException.conflict("Email đã được sử dụng", "EMAIL_ALREADY_EXISTS");
@@ -88,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
         );
 
         // Lưu thông tin đăng ký tạm: key = "pending_reg:{email}"
-        // Format: "username|||passwordHash"  (dùng ||| để tránh conflict với ký tự thường)
+        // Format: "username|||passwordHash" (dùng ||| để tránh conflict với ký tự thường)
         String passwordHash = passwordEncoder.encode(request.password());
         String pendingValue = request.username() + "|||" + passwordHash;
         redisTemplate.opsForValue().set(
@@ -109,8 +121,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse verifyAndRegister(VerifyOtpRequest request) {
-        String otpKey     = OTP_PREFIX + request.email();
-        String pendingKey = PENDING_REG_PREFIX + request.email();
+        String otpKey      = OTP_PREFIX + request.email();
+        String pendingKey  = PENDING_REG_PREFIX + request.email();
+        String attemptsKey = OTP_ATTEMPTS_PREFIX + "reg:" + request.email();
+
+        // ── [SECURITY] Kiểm tra số lần thử sai OTP ────────────────────────────
+        checkOtpAttempts(attemptsKey);
 
         // Lấy OTP từ Redis
         String storedOtp = redisTemplate.opsForValue().get(otpKey);
@@ -118,7 +134,15 @@ public class AuthServiceImpl implements AuthService {
             throw AppException.badRequest("Mã OTP đã hết hạn. Vui lòng gửi lại.", "OTP_EXPIRED");
         }
         if (!storedOtp.equals(request.otp())) {
-            throw AppException.badRequest("Mã OTP không đúng", "OTP_INVALID");
+            recordFailedAttempt(attemptsKey, otpTtlMinutes);
+            int used = getAttemptCount(attemptsKey);
+            int remaining = otpMaxAttempts - used;
+            throw AppException.badRequest(
+                    remaining > 0
+                            ? "Mã OTP không đúng. Còn " + remaining + " lần thử."
+                            : "Mã OTP không đúng. Vui lòng yêu cầu OTP mới.",
+                    "OTP_INVALID"
+            );
         }
 
         // Lấy thông tin đăng ký tạm
@@ -127,8 +151,8 @@ public class AuthServiceImpl implements AuthService {
             throw AppException.badRequest("Phiên đăng ký đã hết hạn. Vui lòng bắt đầu lại.", "SESSION_EXPIRED");
         }
 
-        String[] parts        = pendingValue.split("\\|\\|\\|", 2);
-        String   username     = parts[0];
+        String[] parts       = pendingValue.split("\\|\\|\\|", 2);
+        String   username    = parts[0];
         String   passwordHash = parts[1];
 
         // Kiểm tra lần cuối (tránh race condition)
@@ -148,9 +172,10 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         userRepository.save(user);
 
-        // Xóa OTP và pending data khỏi Redis
+        // Xóa OTP, pending data và attempt counter khỏi Redis
         redisTemplate.delete(otpKey);
         redisTemplate.delete(pendingKey);
+        redisTemplate.delete(attemptsKey);
 
         log.info("User mới đăng ký qua OTP: {}", user.getEmail());
         return buildAuthResponse(user);
@@ -160,12 +185,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void forgotPassword(ForgotPasswordRequest request) {
+        // ── [SECURITY] Rate limit: tối đa sendOtpMaxPerHour lần gửi/email/giờ ──
+        checkSendOtpRateLimit(request.email());
+
         // Kiểm tra email có tồn tại không
         userRepository.findByEmail(request.email())
                 .orElseThrow(() -> AppException.notFound("Địa chỉ email không tồn tại trong hệ thống"));
 
         // Sinh OTP và lưu Redis
-        String otp     = generateOtp();
+        String otp      = generateOtp();
         String redisKey = PWD_RESET_OTP_PREFIX + request.email();
         redisTemplate.opsForValue().set(redisKey, otp, otpTtlMinutes, TimeUnit.MINUTES);
 
@@ -177,14 +205,26 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        String redisKey  = PWD_RESET_OTP_PREFIX + request.email();
-        String storedOtp = redisTemplate.opsForValue().get(redisKey);
+        String redisKey    = PWD_RESET_OTP_PREFIX + request.email();
+        String attemptsKey = OTP_ATTEMPTS_PREFIX + "pwd:" + request.email();
 
+        // ── [SECURITY] Kiểm tra số lần thử sai OTP ────────────────────────────
+        checkOtpAttempts(attemptsKey);
+
+        String storedOtp = redisTemplate.opsForValue().get(redisKey);
         if (storedOtp == null) {
             throw AppException.badRequest("Mã OTP đã hết hạn. Vui lòng yêu cầu lại.", "OTP_EXPIRED");
         }
         if (!storedOtp.equals(request.otp())) {
-            throw AppException.badRequest("Mã OTP không đúng", "OTP_INVALID");
+            recordFailedAttempt(attemptsKey, otpTtlMinutes);
+            int used = getAttemptCount(attemptsKey);
+            int remaining = otpMaxAttempts - used;
+            throw AppException.badRequest(
+                    remaining > 0
+                            ? "Mã OTP không đúng. Còn " + remaining + " lần thử."
+                            : "Mã OTP không đúng. Vui lòng yêu cầu OTP mới.",
+                    "OTP_INVALID"
+            );
         }
 
         User user = userRepository.findByEmail(request.email())
@@ -194,12 +234,10 @@ public class AuthServiceImpl implements AuthService {
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
 
-        // Xoá OTP khỏi Redis
+        // Xoá OTP, attempt counter và refresh token (force re-login)
         redisTemplate.delete(redisKey);
-
-        // Thu hồi refresh token hiện tại (force re-login)
-        String refreshKey = REFRESH_TOKEN_PREFIX + user.getId();
-        redisTemplate.delete(refreshKey);
+        redisTemplate.delete(attemptsKey);
+        redisTemplate.delete(REFRESH_TOKEN_PREFIX + user.getId());
 
         log.info("User đặt lại mật khẩu thành công: {}", user.getEmail());
     }
@@ -254,22 +292,19 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse loginWithGoogle(GoogleLoginRequest request) {
-        try {
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                    new NetHttpTransport(),
-                    new GsonFactory()
-            )
-                    .setAudience(Collections.singletonList(googleClientId))
-                    .build();
+        // ── [SECURITY] Dùng Singleton Bean — không tạo mới mỗi request ─────────
+        if (googleIdTokenVerifier == null) {
+            throw AppException.badRequest("Chức năng đăng nhập Google tạm thời không khả dụng.", "GOOGLE_AUTH_UNAVAILABLE");
+        }
 
-            GoogleIdToken idToken = verifier.verify(request.getIdToken());
+        try {
+            GoogleIdToken idToken = googleIdTokenVerifier.verify(request.getIdToken());
             if (idToken == null) {
                 throw AppException.badRequest("Google ID Token không hợp lệ", "INVALID_GOOGLE_TOKEN");
             }
 
-            GoogleIdToken.Payload payload = idToken.getPayload();
-            String email    = payload.getEmail();
-            String fullName = (String) payload.get("name");
+            GoogleIdToken.Payload payload  = idToken.getPayload();
+            String                email    = payload.getEmail();
 
             User user = userRepository.findByEmail(email)
                     .orElseGet(() -> {
@@ -341,6 +376,68 @@ public class AuthServiceImpl implements AuthService {
         SecureRandom random = new SecureRandom();
         int otp = 100_000 + random.nextInt(900_000);  // [100000, 999999]
         return String.valueOf(otp);
+    }
+
+    /**
+     * Kiểm tra và chặn nếu đã vượt quá giới hạn số lần nhập sai OTP.
+     * Throw ngay lập tức nếu đã bị khoá.
+     */
+    private void checkOtpAttempts(String attemptsKey) {
+        String val = redisTemplate.opsForValue().get(attemptsKey);
+        int attempts = val != null ? Integer.parseInt(val) : 0;
+        if (attempts >= otpMaxAttempts) {
+            throw AppException.badRequest(
+                    "Bạn đã nhập sai OTP quá " + otpMaxAttempts + " lần. Vui lòng yêu cầu OTP mới.",
+                    "OTP_MAX_ATTEMPTS_EXCEEDED"
+            );
+        }
+    }
+
+    /**
+     * Tăng counter số lần nhập sai OTP.
+     * TTL của counter = TTL của OTP (khi OTP hết hạn, counter cũng tự xoá).
+     */
+    private void recordFailedAttempt(String attemptsKey, long ttlMinutes) {
+        redisTemplate.opsForValue().increment(attemptsKey);
+        // Chỉ set expire nếu key vừa được tạo (tránh reset TTL mỗi lần thất bại)
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(attemptsKey))
+                || redisTemplate.getExpire(attemptsKey, TimeUnit.SECONDS) < 0) {
+            redisTemplate.expire(attemptsKey, ttlMinutes, TimeUnit.MINUTES);
+        }
+    }
+
+    /**
+     * Lấy số lần đã thử từ Redis (dùng để tính số lần còn lại để hiển thị).
+     */
+    private int getAttemptCount(String attemptsKey) {
+        String val = redisTemplate.opsForValue().get(attemptsKey);
+        return val != null ? Integer.parseInt(val) : 0;
+    }
+
+    /**
+     * [SECURITY] Rate limit gửi OTP: tối đa sendOtpMaxPerHour lần/email/giờ.
+     * Ngăn chặn:
+     *   1. Email bombing (spam hàng nghìn email tới nạn nhân)
+     *   2. Information enumeration (gửi liên tục để biết email nào đã đăng ký)
+     */
+    private void checkSendOtpRateLimit(String email) {
+        String rateKey = SEND_OTP_RATE_PREFIX + email;
+        String val     = redisTemplate.opsForValue().get(rateKey);
+        int count      = val != null ? Integer.parseInt(val) : 0;
+
+        if (count >= sendOtpMaxPerHour) {
+            throw AppException.badRequest(
+                    "Bạn đã yêu cầu OTP quá " + sendOtpMaxPerHour + " lần trong vòng 1 giờ. Vui lòng thử lại sau.",
+                    "SEND_OTP_RATE_EXCEEDED"
+            );
+        }
+
+        // Tăng counter, TTL = 1 giờ (window trượt)
+        redisTemplate.opsForValue().increment(rateKey);
+        if (count == 0) {
+            // Chỉ set TTL khi counter vừa được tạo
+            redisTemplate.expire(rateKey, 1, TimeUnit.HOURS);
+        }
     }
 
     private AuthResponse buildAuthResponse(User user) {

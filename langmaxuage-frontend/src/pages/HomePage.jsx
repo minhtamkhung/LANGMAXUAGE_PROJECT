@@ -54,7 +54,11 @@ export default function HomePage() {
             .then(r => setDueCount(r.data.data?.length || 0))
             .catch(() => {})
         progressApi.getMyProgress()
-            .then(r => setProgressList(r.data.data || []))
+            .then(r => {
+                const data = r.data.data
+                const list = Array.isArray(data) ? data : (data?.content || [])
+                setProgressList(list)
+            })
             .catch(() => {})
         quizApi.history()
             .then(r => setHistory(r.data.data || []))

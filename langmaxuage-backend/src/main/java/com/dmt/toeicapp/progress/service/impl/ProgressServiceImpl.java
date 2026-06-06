@@ -1,5 +1,6 @@
 package com.dmt.toeicapp.progress.service.impl;
 
+import com.dmt.toeicapp.common.constant.AppConstants;
 import com.dmt.toeicapp.common.exception.AppException;
 import com.dmt.toeicapp.common.security.SecurityUtils;
 import com.dmt.toeicapp.common.util.SM2Algorithm;
@@ -17,6 +18,8 @@ import com.dmt.toeicapp.progress.repository.UserProgressRepository;
 import com.dmt.toeicapp.progress.service.ProgressService;
 import com.dmt.toeicapp.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,14 +39,14 @@ public class ProgressServiceImpl implements ProgressService {
     private final ProgressMapper                 progressMapper;
     private final FlashcardMapper                flashcardMapper;
 
-    private static final String DEFAULT_LOCALE = "en";
+
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProgressResponse> getMyProgress(String locale) {
+    public Page<ProgressResponse> getMyProgress(String locale, Pageable pageable) {
         Long userId = SecurityUtils.getCurrentUserId();
-        List<UserProgress> list = progressRepository.findByUserId(userId);
-        return enrichWithTranslations(list, locale);
+        Page<UserProgress> page = progressRepository.findByUserId(userId, pageable);
+        return enrichWithTranslationsPage(page, locale);
     }
 
     @Override
@@ -85,6 +88,30 @@ public class ProgressServiceImpl implements ProgressService {
     }
 
     // ── Logic bổ trợ đa ngôn ngữ ──────────────────────────────
+
+    /** Phân trang: mỗi page được batch-enrich translations (không N+1) */
+    private Page<ProgressResponse> enrichWithTranslationsPage(Page<UserProgress> page, String locale) {
+        if (page.isEmpty()) return page.map(p -> progressMapper.toResponse(p));
+
+        List<Long> cardIds = page.map(p -> p.getFlashcard().getId()).toList();
+        Map<Long, List<FlashcardTranslation>> allTransMap = translationRepository
+                .findAllByFlashcardIds(cardIds)
+                .stream()
+                .collect(Collectors.groupingBy(t -> t.getFlashcard().getId()));
+
+        return page.map(p -> {
+            ProgressResponse resp    = progressMapper.toResponse(p);
+            Flashcard        flashcard = p.getFlashcard();
+            Map<String, FlashcardResponse.TranslationContent> transMap =
+                    buildTranslationMap(allTransMap.getOrDefault(flashcard.getId(), List.of()));
+            FlashcardResponse enrichedCard = buildEnrichedCard(flashcard, locale, transMap);
+            return new ProgressResponse(
+                    resp.id(), enrichedCard, resp.status(), resp.reviewCount(),
+                    resp.correctCount(), resp.easinessFactor(), resp.intervalDays(),
+                    resp.sm2Repetitions(), resp.lastReviewedAt(), resp.nextReviewAt()
+            );
+        });
+    }
 
     private List<ProgressResponse> enrichWithTranslations(List<UserProgress> list, String locale) {
         if (list.isEmpty()) return List.of();

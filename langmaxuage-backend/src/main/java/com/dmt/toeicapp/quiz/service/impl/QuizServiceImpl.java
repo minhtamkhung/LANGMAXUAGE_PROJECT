@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -41,7 +42,9 @@ public class QuizServiceImpl implements QuizService {
     private final FlashcardTranslationRepository translationRepository;
     private final UserRepository        userRepository;
 
-    private static final int OPTIONS_COUNT = 4;
+    private static final int OPTIONS_COUNT  = 4;
+    private static final int DISTRACTOR_POOL = 50; // Pool distractor tối đa để tránh load quá nhiều
+    private final SecureRandom random = new SecureRandom();
 
     @Override
     @Transactional
@@ -50,19 +53,57 @@ public class QuizServiceImpl implements QuizService {
         Topic topic = topicRepository.findById(request.topicId())
                 .orElseThrow(() -> AppException.notFound("Không tìm thấy topic"));
 
-        List<Flashcard> allCards = flashcardRepository
-                .findByTopicId(topic.getId(), currentUserId, PageRequest.of(0, 200)).getContent();
+        // ── [FIX #7] Random sampling đúng cách ──────────────────────────────
+        // Thay vì load 200 card cố định rồi shuffle (bias, O(200) luôn),
+        // ta đếm tổng số card hợp lệ, rồi chỉ lấy đúng số cần dùng.
+        //
+        // Chiến lược:
+        //   1. Đếm totalCards từ DB
+        //   2. Nếu totalCards <= questionCount: lấy tất cả rồi shuffle
+        //   3. Nếu totalCards > questionCount: lấy questionCount * 2 với random offset
+        //      rồi shuffle và trim → phân phối đồng đều hơn
+        int questionCount = request.questionCount();
+        long totalCards   = flashcardRepository.countByTopicId(topic.getId(), currentUserId);
 
-        if (allCards.isEmpty()) throw AppException.badRequest("Topic không có flashcard", "TOPIC_EMPTY");
+        if (totalCards == 0) throw AppException.badRequest("Topic không có flashcard", "TOPIC_EMPTY");
+
+        List<Flashcard> selectedCards;
+        if (totalCards <= questionCount) {
+            // Lấy tất cả, shuffle trong memory
+            selectedCards = new ArrayList<>(flashcardRepository
+                    .findByTopicId(topic.getId(), currentUserId,
+                            PageRequest.of(0, (int) totalCards)).getContent());
+            Collections.shuffle(selectedCards, random);
+        } else {
+            // Lấy questionCount card với random page offset → mọi card đều có cơ hội
+            int fetchSize = Math.min(questionCount * 2, (int) totalCards);
+            int maxPage   = (int) Math.ceil((double) totalCards / fetchSize);
+            int randomPage = random.nextInt(maxPage);
+            List<Flashcard> pool = new ArrayList<>(flashcardRepository
+                    .findByTopicId(topic.getId(), currentUserId,
+                            PageRequest.of(randomPage, fetchSize)).getContent());
+            Collections.shuffle(pool, random);
+            selectedCards = pool.stream().limit(questionCount).toList();
+        }
+
+        // Pool distractor: load thêm một số card từ topic để tạo câu trả lời nhiễu
+        // Dùng page ngẫu nhiên khác để tránh trùng với selectedCards
+        List<Flashcard> distractorPool = new ArrayList<>(flashcardRepository
+                .findByTopicId(topic.getId(), currentUserId,
+                        PageRequest.of(0, DISTRACTOR_POOL)).getContent());
+        Collections.shuffle(distractorPool, random);
+
+        // Build localizedDefs: gộp selectedCards + distractorPool để lấy đủ translation
+        List<Long> allNeededIds = new ArrayList<>();
+        selectedCards.forEach(c -> allNeededIds.add(c.getId()));
+        distractorPool.stream()
+                .filter(c -> !allNeededIds.contains(c.getId()))
+                .forEach(c -> allNeededIds.add(c.getId()));
 
         Map<Long, String> localizedDefs = translationRepository
-                .findByFlashcardIdsAndLocale(allCards.stream().map(Flashcard::getId).toList(), locale)
+                .findByFlashcardIdsAndLocale(allNeededIds, locale)
                 .stream()
                 .collect(Collectors.toMap(t -> t.getFlashcard().getId(), FlashcardTranslation::getDefinition));
-
-        List<Flashcard> mutableCards = new ArrayList<>(allCards);
-        Collections.shuffle(mutableCards);
-        List<Flashcard> selectedCards = mutableCards.stream().limit(request.questionCount()).toList();
 
         QuizAttempt attempt = quizAttemptRepository.save(QuizAttempt.builder()
                 .user(userRepository.getReferenceById(currentUserId))
@@ -80,13 +121,13 @@ public class QuizServiceImpl implements QuizService {
             // FIX:   Thêm .filter(d -> !d.equalsIgnoreCase(correctDef)) trước
             //         .distinct() để đảm bảo không có distractor nào trùng đáp án đúng.
             // ────────────────────────────────────────────────────────────────────
-            List<String> distractors = allCards.stream()
+            List<String> distractors = distractorPool.stream()
                     .filter(c -> !c.getId().equals(card.getId()))
                     .map(c -> localizedDefs.getOrDefault(c.getId(), c.getDefinition()))
-                    .filter(d -> !d.equalsIgnoreCase(correctDef)) // ← FIX: loại trùng đáp án đúng
+                    .filter(d -> !d.equalsIgnoreCase(correctDef))
                     .distinct()
                     .collect(Collectors.toList());
-            Collections.shuffle(distractors);
+            Collections.shuffle(distractors, random);
 
             List<String> options = new ArrayList<>();
             options.add(correctDef);

@@ -1,13 +1,14 @@
 spring:
   datasource:
     url: jdbc:postgresql://postgres:5432/langmaxuage_db
-    username: postgres
-    password: postgres
+    username: ${POSTGRES_USER:langmaxuage_user}
+    password: ${POSTGRES_PASSWORD:langmaxuage}
 
   data:
     redis:
       host: redis
       port: 6379
+      password: ${REDIS_PASSWORD:langmaxuage}
 
   jpa:
     # Linh hoạt bật/tắt log SQL trong container qua biến môi trường (mặc định tắt)

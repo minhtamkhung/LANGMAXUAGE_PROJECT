@@ -92,6 +92,14 @@
             <version>${cloudinary.version}</version>
         </dependency>
 
+        <!-- ── Apache Commons CSV (CSV import — thay thế custom parser) ── -->
+        <!-- Battle-tested, handles edge cases: BOM, escaped quotes, newlines -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.11.0</version>
+        </dependency>
+
         <!-- ── MapStruct (DTO mapping) ──────────────────────── -->
         <dependency>
             <groupId>org.mapstruct</groupId>

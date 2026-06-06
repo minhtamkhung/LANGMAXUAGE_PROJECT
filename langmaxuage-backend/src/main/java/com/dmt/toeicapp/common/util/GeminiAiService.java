@@ -62,6 +62,9 @@ public class GeminiAiService {
                                         Map.of("text", prompt)
                                 )
                         )
+                ),
+                "generationConfig", Map.of(
+                        "responseMimeType", "application/json"
                 )
         );
 
@@ -69,6 +72,7 @@ public class GeminiAiService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
+            System.out.println("[DEBUG] Gemini API Key in use (first 15 & last 4): " + (apiKey == null ? "null" : (apiKey.length() > 20 ? apiKey.substring(0, 15) + "..." + apiKey.substring(apiKey.length() - 4) : apiKey)));
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
@@ -88,6 +92,8 @@ public class GeminiAiService {
                     .path(0)
                     .path("text")
                     .asText();
+
+            System.out.println("[DEBUG] Gemini Raw Text: " + rawText);
 
             // Làm sạch text: loại bỏ markdown code block nếu có (```json ... ```)
             String jsonText = rawText.trim();

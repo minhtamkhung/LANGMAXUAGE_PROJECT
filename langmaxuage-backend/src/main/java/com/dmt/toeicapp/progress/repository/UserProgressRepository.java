@@ -14,7 +14,11 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Long
     // Lấy progress của user cho một flashcard cụ thể
     Optional<UserProgress> findByUserIdAndFlashcardId(Long userId, Long flashcardId);
 
-    // Lấy tất cả progress của user
+    // Lấy progress của user có phân trang (trang chủ, có thể có nhiều card)
+    org.springframework.data.domain.Page<UserProgress> findByUserId(
+            Long userId, org.springframework.data.domain.Pageable pageable);
+
+    // Không phân trang — chỉ dùng cho các thẩm quyền nội bộ (dashboard count)
     List<UserProgress> findByUserId(Long userId);
 
     // Lấy danh sách card cần ôn hôm nay (SM-2)

@@ -46,4 +46,12 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
               AND (f.createdBy.id = :userId OR f.createdBy.role = com.dmt.toeicapp.user.entity.User.Role.ADMIN)
             """)
     boolean existsByWordAndTopicIdAndUser(@Param("word") String word, @Param("topicId") Long topicId, @Param("userId") Long userId);
+
+    @Query("""
+            SELECT COUNT(f) FROM Flashcard f
+            WHERE f.active = true
+              AND f.topic.id = :topicId
+              AND (f.createdBy.id = :userId OR f.createdBy.role = com.dmt.toeicapp.user.entity.User.Role.ADMIN)
+            """)
+    long countByTopicId(@Param("topicId") Long topicId, @Param("userId") Long userId);
 }

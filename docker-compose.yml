@@ -5,14 +5,19 @@ services:
     container_name: langmaxuage_postgres
     environment:
       POSTGRES_DB: langmaxuage_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      # [SECURITY] Đọc từ env var — KHÔNG hardcode password trong file này.
+      # Khi deploy: export POSTGRES_USER=myuser POSTGRES_PASSWORD=<strong-password>
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    # [SECURITY] Không expose port ra ngoài host trong production.
+    # Backend và Postgres cùng network nội bộ — không cần port mapping.
+    # Bỏ comment dòng dưới chỉ khi cần debug local với psql/DBeaver:
     ports:
-      - "5433:5432"
+       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d langmaxuage_db" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d langmaxuage_db" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -21,10 +26,37 @@ services:
   redis:
     image: redis:7-alpine
     container_name: langmaxuage_redis
+    # [SECURITY] Bật xác thực bằng requirepass.
+    # Đọc từ env var REDIS_PASSWORD — KHÔNG để trống trong production.
+    command: >
+      sh -c '
+        if [ -n "$$REDIS_PASSWORD" ]; then
+          redis-server --requirepass "$$REDIS_PASSWORD"
+        else
+          redis-server
+        fi
+      '
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    # [SECURITY] Không expose port Redis ra ngoài host.
+    # Backend kết nối qua internal Docker network — không cần port mapping.
+    # Bỏ comment chỉ khi debug local:
     ports:
-      - "6379:6379"
+       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: >
+        sh -c '
+          if [ -n "$$REDIS_PASSWORD" ]; then
+            redis-cli -a "$$REDIS_PASSWORD" ping
+          else
+            redis-cli ping
+          fi
+        '
+      interval: 5s
+      timeout: 3s
+      retries: 5
     restart: unless-stopped
 
   backend:
@@ -34,13 +66,24 @@ services:
     container_name: langmaxuage_backend
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      # [SECURITY] Truyền credentials vào backend qua env — không hardcode trong image
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-}
+    # [SECURITY] Chỉ expose port backend ra ngoài nếu không dùng nginx reverse proxy.
+    # Khi có nginx: bỏ comment ports và để nginx làm entry point.
     ports:
       - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy   # ← đợi Redis ready (đã thêm healthcheck)
     restart: unless-stopped
 
   frontend:
@@ -53,6 +96,7 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
