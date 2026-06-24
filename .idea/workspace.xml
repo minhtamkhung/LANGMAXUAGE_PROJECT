@@ -3,31 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5b944a25-cac8-47ff-a1cb-bc77749511ce" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/chatbot/service/impl/AiTopicServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/chatbot/service/impl/AiTopicServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/aop/AuditAspect.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/aop/AuditAspect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/aop/LoggingAspect.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/aop/LoggingAspect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/email/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/email/EmailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/util/GeminiAiService.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/common/util/GeminiAiService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/repository/FlashcardRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/repository/FlashcardRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/service/impl/FlashcardServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/flashcard/service/impl/FlashcardServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/i18n/util/LocaleResolverUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/i18n/util/LocaleResolverUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/progress/controller/ProgressController.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/progress/controller/ProgressController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/progress/repository/UserProgressRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/progress/repository/UserProgressRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/progress/service/ProgressService.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/progress/service/ProgressService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/progress/service/impl/ProgressServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/progress/service/impl/ProgressServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/quiz/service/impl/QuizServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/quiz/service/impl/QuizServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/topic/service/impl/TopicServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/topic/service/impl/TopicServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/service/impl/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/java/com/dmt/toeicapp/user/service/impl/AuthServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/resources/application-docker.yml" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/resources/application-docker.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-backend/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/api/progressApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/api/progressApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/HomePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/HomePage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/ManageFlashcardsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/ManageFlashcardsPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/ProfilePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/pages/ProfilePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/api/axiosInstance.js" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/api/axiosInstance.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,6 +138,10 @@
       <workItem from="1780325652833" duration="172000" />
       <workItem from="1780466925658" duration="50000" />
       <workItem from="1780731630435" duration="5670000" />
+      <workItem from="1780739752620" duration="72000" />
+      <workItem from="1780739897618" duration="374000" />
+      <workItem from="1780740594942" duration="907000" />
+      <workItem from="1780906000572" duration="13000" />
     </task>
     <servers />
   </component>
