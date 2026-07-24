@@ -91,6 +91,7 @@ app:
   rate-limit:
     otp-max-attempts: 5       # Số lần nhập OTP sai tối đa trước khi bị khoá
     send-otp-max-per-hour: 3  # Số lần yêu cầu gửi OTP tối đa trong 1 giờ
+    ai-max-quota-per-day: ${AI_MAX_QUOTA_PER_DAY:5} # Số lần sinh AI tối đa trong 1 ngày
 
   # ── Security (trusted reverse proxy) ─────────────────────────
   # Danh sách IP của reverse proxy tin cậy (nginx, load balancer, v.v.).

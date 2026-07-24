@@ -6,15 +6,15 @@ import userApi from '../api/userApi'
 import topicApi from '../api/topicApi'
 
 const SCORES = (t) => [
-    { value: 600, label: t('onboarding.score_600_label'), desc: t('onboarding.score_600_desc'), color: 'border-emerald-200 hover:border-emerald-400 bg-emerald-50/10 text-emerald-800' },
-    { value: 750, label: t('onboarding.score_750_label'), desc: t('onboarding.score_750_desc'), color: 'border-amber-200 hover:border-amber-400 bg-amber-50/10 text-amber-800' },
-    { value: 900, label: t('onboarding.score_900_label'), desc: t('onboarding.score_900_desc'), color: 'border-primary-container hover:border-primary bg-primary/5 text-primary' },
+    { value: 600, label: t('onboarding.score_600_label'), desc: t('onboarding.score_600_desc'), icon: 'school', color: 'text-emerald-500 bg-emerald-500/10' },
+    { value: 750, label: t('onboarding.score_750_label'), desc: t('onboarding.score_750_desc'), icon: 'auto_stories', color: 'text-primary bg-primary/10' },
+    { value: 900, label: t('onboarding.score_900_label'), desc: t('onboarding.score_900_desc'), icon: 'workspace_premium', color: 'text-amber-500 bg-amber-500/10' },
 ]
 
 const GOALS = (t) => [
-    { value: 5, label: t('onboarding.goal_5_label'), desc: t('onboarding.goal_5_desc') },
-    { value: 10, label: t('onboarding.goal_10_label'), desc: t('onboarding.goal_10_desc') },
-    { value: 20, label: t('onboarding.goal_20_label'), desc: t('onboarding.goal_20_desc') },
+    { value: 5, label: t('onboarding.goal_5_label'), desc: t('onboarding.goal_5_desc'), icon: 'self_improvement', color: 'text-emerald-500 bg-emerald-500/10' },
+    { value: 10, label: t('onboarding.goal_10_label'), desc: t('onboarding.goal_10_desc'), icon: 'fitness_center', color: 'text-primary bg-primary/10' },
+    { value: 20, label: t('onboarding.goal_20_label'), desc: t('onboarding.goal_20_desc'), icon: 'bolt', color: 'text-amber-500 bg-amber-500/10' },
 ]
 
 const WELCOME_SLIDES = (t) => [
@@ -126,18 +126,18 @@ export default function OnboardingPage() {
     const activeSlide = welcomeSlides[welcomeIndex]
 
     return (
-        <div className="min-h-screen bg-surface-container-lowest flex items-center justify-center p-6 select-none relative overflow-hidden">
+        <div className="min-h-screen bg-surface flex items-center justify-center p-6 select-none relative overflow-hidden">
             {/* Background elements */}
             <div className="absolute top-[-20%] left-[-10%] w-[60%] aspect-square rounded-full bg-primary/5 blur-[120px]" />
             <div className="absolute bottom-[-20%] right-[-10%] w-[60%] aspect-square rounded-full bg-secondary/5 blur-[120px]" />
 
-            <div className="relative z-10 w-full max-w-2xl bg-surface-container-low border border-outline-variant/15
+            <div className="relative z-10 w-full max-w-4xl bg-surface-container-low border border-outline-variant/15
                             rounded-[2.5rem] shadow-2xl p-8 md:p-12 transition-all duration-300">
                 
                 {/* Progress bar */}
-                <div className="flex items-center gap-1.5 mb-12">
+                <div className="flex items-center gap-2 mb-12">
                     {[1, 2, 3, 4].map(s => (
-                        <div key={s} className="flex-1 h-2.5 rounded-full overflow-hidden bg-surface-container-high">
+                        <div key={s} className="flex-1 h-2 rounded-full overflow-hidden bg-surface-container-high">
                             <div className={`h-full transition-all duration-500
                                 ${step > s ? 'bg-primary' : step === s ? 'bg-gradient-to-r from-primary to-primary-container w-[100%]' : 'w-0'}`}
                             />
@@ -146,7 +146,7 @@ export default function OnboardingPage() {
                 </div>
 
                 {error && (
-                    <div className="flex items-center gap-2 text-error text-sm font-semibold mb-6 p-4 bg-error-container rounded-2xl">
+                    <div className="flex items-center gap-2 text-error text-sm font-semibold mb-6 p-4 bg-error-container/20 border border-error/15 rounded-2xl">
                         <span className="material-symbols-outlined text-base">error</span>
                         {error}
                     </div>
@@ -156,63 +156,67 @@ export default function OnboardingPage() {
                 {step === 1 && (
                     <div className="space-y-8 animate-[fadeInUp_0.35s_ease-out]">
                         <div className="text-center space-y-6">
-                            <div className={`w-24 h-24 rounded-[2rem] flex items-center justify-center mx-auto transition-all duration-300 ${activeSlide.color}`}>
-                                <span className="material-symbols-outlined text-5xl animate-[pulse_2s_infinite]">
+                            <div className={`w-28 h-28 rounded-[2rem] flex items-center justify-center mx-auto transition-all duration-300 shadow-lg ${activeSlide.color}`}>
+                                <span className="material-symbols-outlined text-6xl animate-[pulse_2s_infinite]">
                                     {activeSlide.icon}
                                 </span>
                             </div>
-                            <h1 className="font-headline text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight leading-snug">
-                                {activeSlide.title}
-                            </h1>
-                            <p className="text-on-surface-variant text-base leading-relaxed max-w-lg mx-auto">
-                                {activeSlide.subtitle}
-                            </p>
+                            <div className="space-y-3">
+                                <h1 className="font-headline text-3xl md:text-4xl font-black text-on-surface tracking-tighter leading-none">
+                                    {activeSlide.title}
+                                </h1>
+                                <p className="text-on-surface-variant text-base leading-relaxed max-w-lg mx-auto font-medium">
+                                    {activeSlide.subtitle}
+                                </p>
+                            </div>
                         </div>
 
                         {/* Slider dots */}
-                        <div className="flex justify-center gap-2 pt-2">
+                        <div className="flex justify-center gap-2 pt-4">
                             {welcomeSlides.map((_, idx) => (
                                 <button key={idx} onClick={() => setWelcomeIndex(idx)}
-                                        className={`h-2 rounded-full transition-all duration-300
-                                            ${welcomeIndex === idx ? 'w-6 bg-primary' : 'w-2 bg-outline-variant/35'}`}
+                                        className={`h-2.5 rounded-full transition-all duration-300
+                                            ${welcomeIndex === idx ? 'w-8 bg-primary' : 'w-2.5 bg-outline-variant/35'}`}
                                 />
                             ))}
                         </div>
                     </div>
                 )}
 
-                {/* ── STEP 2: TARGET SCORE ── */}
+                {/* ── STEP 2: TARGET LEVEL ── */}
                 {step === 2 && (
                     <div className="space-y-8 animate-[fadeInUp_0.35s_ease-out]">
                         <div className="text-center">
-                            <span className="text-xs font-bold text-secondary uppercase tracking-widest">{t('onboarding.step_2_of_4')}</span>
-                            <h1 className="font-headline text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight mt-1.5">
+                            <span className="text-[10px] font-bold text-secondary uppercase tracking-[0.2em]">{t('onboarding.step_2_of_4')}</span>
+                            <h1 className="font-headline text-3xl font-black text-on-surface tracking-tighter mt-2">
                                 {t('onboarding.title_2')}
                             </h1>
-                            <p className="text-sm text-on-surface-variant mt-2 max-w-md mx-auto">
+                            <p className="text-sm text-on-surface-variant mt-2 max-w-md mx-auto font-medium">
                                 {t('onboarding.desc_2')}
                             </p>
                         </div>
 
-                        <div className="space-y-3 pt-2">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
                             {scores.map(sc => (
                                 <div key={sc.value} onClick={() => setTargetScore(sc.value)}
-                                     className={`flex items-start gap-4 p-5 rounded-3xl border-2 cursor-pointer transition-all duration-200 hover:scale-[1.01]
+                                     className={`flex flex-col p-6 rounded-3xl border-2 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98] relative overflow-hidden group
                                          ${targetScore === sc.value
                                              ? 'border-primary bg-primary/5 shadow-md shadow-primary/5'
                                              : 'border-outline-variant/15 hover:border-outline-variant/40 bg-surface-container-low'
                                          }`}
                                 >
-                                    <div className="flex items-center justify-center mt-1">
-                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
-                                            ${targetScore === sc.value ? 'border-primary' : 'border-outline'}`}>
-                                            {targetScore === sc.value && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 ${sc.color}`}>
+                                        <span className="material-symbols-outlined text-2xl">{sc.icon}</span>
+                                    </div>
+                                    <h3 className="font-headline font-bold text-on-surface text-lg leading-tight mb-2">{sc.label}</h3>
+                                    <p className="text-xs text-on-surface-variant leading-relaxed font-medium mt-auto">{sc.desc}</p>
+                                    
+                                    {/* Selected Indicator */}
+                                    {targetScore === sc.value && (
+                                        <div className="absolute top-4 right-4 text-primary">
+                                            <span className="material-symbols-outlined text-xl">check_circle</span>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-headline font-bold text-on-surface text-base">{sc.label}</h3>
-                                        <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">{sc.desc}</p>
-                                    </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -223,34 +227,36 @@ export default function OnboardingPage() {
                 {step === 3 && (
                     <div className="space-y-8 animate-[fadeInUp_0.35s_ease-out]">
                         <div className="text-center">
-                            <span className="text-xs font-bold text-secondary uppercase tracking-widest">{t('onboarding.step_3_of_4')}</span>
-                            <h1 className="font-headline text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight mt-1.5">
+                            <span className="text-[10px] font-bold text-secondary uppercase tracking-[0.2em]">{t('onboarding.step_3_of_4')}</span>
+                            <h1 className="font-headline text-3xl font-black text-on-surface tracking-tighter mt-2">
                                 {t('onboarding.title_3')}
                             </h1>
-                            <p className="text-sm text-on-surface-variant mt-2 max-w-md mx-auto">
+                            <p className="text-sm text-on-surface-variant mt-2 max-w-md mx-auto font-medium">
                                 {t('onboarding.desc_3')}
                             </p>
                         </div>
 
-                        <div className="space-y-3 pt-2">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
                             {goals.map(gl => (
                                 <div key={gl.value} onClick={() => setDailyGoal(gl.value)}
-                                     className={`flex items-start gap-4 p-5 rounded-3xl border-2 cursor-pointer transition-all duration-200 hover:scale-[1.01]
+                                     className={`flex flex-col p-6 rounded-3xl border-2 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98] relative overflow-hidden group
                                          ${dailyGoal === gl.value
                                              ? 'border-primary bg-primary/5 shadow-md shadow-primary/5'
                                              : 'border-outline-variant/15 hover:border-outline-variant/40 bg-surface-container-low'
                                          }`}
                                 >
-                                    <div className="flex items-center justify-center mt-1">
-                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
-                                            ${dailyGoal === gl.value ? 'border-primary' : 'border-outline'}`}>
-                                            {dailyGoal === gl.value && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 ${gl.color}`}>
+                                        <span className="material-symbols-outlined text-2xl">{gl.icon}</span>
+                                    </div>
+                                    <h3 className="font-headline font-bold text-on-surface text-lg leading-tight mb-2">{gl.label}</h3>
+                                    <p className="text-xs text-on-surface-variant leading-relaxed font-medium mt-auto">{gl.desc}</p>
+                                    
+                                    {/* Selected Indicator */}
+                                    {dailyGoal === gl.value && (
+                                        <div className="absolute top-4 right-4 text-primary">
+                                            <span className="material-symbols-outlined text-xl">check_circle</span>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-headline font-bold text-on-surface text-base">{gl.label}</h3>
-                                        <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">{gl.desc}</p>
-                                    </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -261,42 +267,49 @@ export default function OnboardingPage() {
                 {step === 4 && (
                     <div className="space-y-8 animate-[fadeInUp_0.35s_ease-out]">
                         <div className="text-center">
-                            <span className="text-xs font-bold text-secondary uppercase tracking-widest">{t('onboarding.step_4_of_4')}</span>
-                            <h1 className="font-headline text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight mt-1.5">
+                            <span className="text-[10px] font-bold text-secondary uppercase tracking-[0.2em]">{t('onboarding.step_4_of_4')}</span>
+                            <h1 className="font-headline text-3xl font-black text-on-surface tracking-tighter mt-2">
                                 {t('onboarding.title_4')}
                             </h1>
-                            <p className="text-sm text-on-surface-variant mt-2 max-w-md mx-auto">
+                            <p className="text-sm text-on-surface-variant mt-2 max-w-md mx-auto font-medium">
                                 {t('onboarding.desc_4')}
                             </p>
                         </div>
 
                         {loadingTopics ? (
-                            <div className="flex items-center justify-center py-16">
+                            <div className="flex items-center justify-center py-20">
                                 <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                             </div>
                         ) : topics.length === 0 ? (
-                            <div className="text-center py-12 text-on-surface-variant text-sm">
+                            <div className="text-center py-16 text-on-surface-variant text-sm font-semibold bg-surface-container-low rounded-3xl">
                                 {t('onboarding.no_topics')}
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto pr-1">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[320px] overflow-y-auto pr-1">
                                 {topics.map(tp => (
                                     <div key={tp.id} onClick={() => setSelectedTopic(tp.id)}
-                                         className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 hover:scale-[1.01] flex flex-col justify-between
+                                         className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 hover:scale-[1.01] flex flex-col justify-between relative overflow-hidden active:scale-[0.99]
                                              ${selectedTopic === tp.id
-                                                 ? 'border-primary bg-primary/5'
+                                                 ? 'border-primary bg-primary/5 shadow-md shadow-primary/5'
                                                  : 'border-outline-variant/15 hover:border-outline-variant/30 bg-surface-container-low'
                                              }`}
                                     >
-                                        <div>
-                                            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-3">
-                                                <span className="material-symbols-outlined text-sm">auto_stories</span>
+                                        <div className="pr-6">
+                                            <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
+                                                <span className="material-symbols-outlined text-lg">auto_stories</span>
                                             </div>
-                                            <h3 className="font-headline font-bold text-on-surface text-sm line-clamp-1">{tp.name}</h3>
-                                            <p className="text-[10px] text-on-surface-variant mt-1 line-clamp-2 leading-relaxed">
-                                                {tp.description || 'TOEIC vocabulary topic.'}
+                                            <h3 className="font-headline font-bold text-on-surface text-base line-clamp-1">{tp.name}</h3>
+                                            <p className="text-[11px] text-on-surface-variant mt-1.5 line-clamp-2 leading-relaxed font-medium">
+                                                {tp.description || 'Multilingual vocabulary topic.'}
                                             </p>
                                         </div>
+                                        
+                                        {/* Checked Indicator */}
+                                        {selectedTopic === tp.id && (
+                                            <div className="absolute top-4 right-4 text-primary">
+                                                <span className="material-symbols-outlined text-lg">check_circle</span>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -309,7 +322,7 @@ export default function OnboardingPage() {
                     {/* Back Button */}
                     {(step > 1 || welcomeIndex > 0) ? (
                         <button onClick={handleBackStep} disabled={submitting}
-                                className="flex items-center gap-2 px-5 py-3 border-2 border-outline-variant/30 text-on-surface-variant
+                                className="flex items-center gap-2 px-6 py-3 border-2 border-outline-variant/30 text-on-surface-variant
                                            font-semibold rounded-2xl hover:bg-surface-container transition-all text-sm active:scale-95 disabled:opacity-50">
                             <span className="material-symbols-outlined text-base">arrow_back</span>
                             {t('common.back')}
@@ -321,7 +334,7 @@ export default function OnboardingPage() {
                     {/* Forward / Finish Button */}
                     {step < 4 ? (
                         <button onClick={handleNextStep}
-                                className="flex items-center gap-2 px-6 py-3 bg-primary text-on-primary
+                                className="flex items-center gap-2 px-8 py-3.5 bg-primary text-on-primary
                                            font-bold rounded-2xl shadow-lg shadow-primary/25 hover:shadow-primary/35
                                            transition-all active:scale-95 text-sm ml-auto">
                             {t('common.continue')}
@@ -329,7 +342,7 @@ export default function OnboardingPage() {
                         </button>
                     ) : (
                         <button onClick={handleSubmit} disabled={submitting || topics.length === 0}
-                                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-container
+                                className="flex items-center gap-2 px-10 py-3.5 bg-gradient-to-r from-primary to-primary-container
                                            text-on-primary font-bold rounded-2xl shadow-lg shadow-primary/25 hover:shadow-primary/35
                                            transition-all active:scale-95 text-sm ml-auto disabled:opacity-50">
                             {submitting ? (
@@ -353,4 +366,3 @@ export default function OnboardingPage() {
         </div>
     )
 }
-

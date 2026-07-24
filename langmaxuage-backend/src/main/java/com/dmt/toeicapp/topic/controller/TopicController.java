@@ -6,6 +6,9 @@ import com.dmt.toeicapp.topic.dto.TopicResponse;
 import com.dmt.toeicapp.topic.service.TopicService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +27,18 @@ public class TopicController {
             @RequestParam(defaultValue = "en") String locale) {
         return ResponseEntity.ok(
                 ApiResponse.ok(topicService.getAccessible(locale))
+        );
+    }
+
+    // GET /api/topics/search?query=business&filter=all&locale=vi&page=0&size=10
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<TopicResponse>>> search(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "all") String filter,
+            @RequestParam(defaultValue = "en") String locale,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(
+                ApiResponse.ok(topicService.search(query, filter, locale, pageable))
         );
     }
 

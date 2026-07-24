@@ -2,6 +2,7 @@ import api from './axiosInstance'
 
 const topicApi = {
     getAll:    (locale = 'en')         => api.get('/topics', { params: { locale } }),
+    search:    (params)                => api.get('/topics/search', { params }),
     getById:   (id, locale = 'en')     => api.get(`/topics/${id}`, { params: { locale } }),
     create:    (data)                  => api.post('/topics', data),
     update:    (id, data)              => api.put(`/topics/${id}`, data),

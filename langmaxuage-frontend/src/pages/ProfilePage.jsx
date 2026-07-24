@@ -77,189 +77,192 @@ export default function ProfilePage() {
 
     return (
         <Layout>
-            {/* Hero banner */}
-            <section className="mb-12">
-                <div className="relative w-full h-40 rounded-xl overflow-hidden mb-[-4rem] bg-gradient-to-r from-primary to-primary-container">
-                    <div className="absolute inset-0 opacity-10"
-                         style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-                </div>
-
-                <div className="relative px-8 flex flex-col md:flex-row items-end gap-6">
-                    <div className="relative">
-                        <div className="w-32 h-32 rounded-xl border-4 border-surface bg-gradient-to-br from-primary to-primary-container shadow-xl flex items-center justify-center">
-                            <span className="text-white text-5xl font-extrabold font-headline">{initials}</span>
-                        </div>
+            <div className="max-w-6xl mx-auto px-4 py-6">
+                
+                {/* Hero banner */}
+                <section className="mb-12">
+                    <div className="relative w-full h-40 rounded-[2rem] overflow-hidden mb-[-2.5rem] bg-gradient-to-r from-primary to-primary-container">
+                        <div className="absolute inset-0 opacity-10"
+                             style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
                     </div>
 
-                    <div className="flex-grow pb-2">
-                        <h1 className="text-4xl font-extrabold tracking-tight text-on-surface font-headline">
-                            {user?.username}
-                        </h1>
-                        <p className="text-on-surface-variant font-medium mt-1">{user?.email} • {user?.role}</p>
-                    </div>
-
-                    <div className="pb-2">
-                        <button onClick={() => { setEditMode(e => !e); setMsg('') }}
-                                className="px-6 py-3 bg-primary text-on-primary rounded-full font-headline font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                            <span className="material-symbols-outlined text-sm">
-                                {editMode ? 'close' : 'edit'}
-                            </span>
-                            {editMode ? t('common.cancel') : t('profile.edit_profile')}
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            {msg && (
-                <div className={`mb-6 px-4 py-3 rounded-DEFAULT text-sm font-medium ${
-                    msg.includes('Error') || msg.includes('error') || msg.includes('Lỗi') || msg.includes('lỗi') ? 'bg-error-container text-error' : 'bg-primary-fixed text-primary'
-                }`}>
-                    {msg}
-                </div>
-            )}
-
-            {/* Stats bento */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-                {[
-                    { icon: 'history_edu', iconBg: 'bg-primary-fixed text-primary', label: t('profile.total_reviews'), value: stats.totalReviews, badge: t('profile.all_time') },
-                    { icon: 'pending_actions', iconBg: 'bg-tertiary-fixed text-tertiary', iconFill: true, label: t('profile.due_today'), value: stats.dueCards, badge: t('profile.due_today_badge') },
-                    { icon: 'quiz', iconBg: 'bg-secondary-container text-secondary', label: t('profile.quiz_attempts'), value: stats.quizCount, badge: t('profile.total_badge') },
-                    { icon: 'analytics', iconBg: 'bg-surface-container-high text-on-surface-variant', label: t('profile.avg_quiz_score'), value: `${stats.avgScore}/100`, badge: t('profile.average_badge') },
-                ].map(({ icon, iconBg, iconFill, label, value, badge }) => (
-                    <div key={label} className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10 flex flex-col justify-between hover:-translate-y-1 transition-transform ease-out-expo duration-300">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className={`p-3 rounded-xl ${iconBg}`}>
-                                <span className="material-symbols-outlined" style={{ fontVariationSettings: iconFill ? "'FILL' 1" : "'FILL' 0" }}>
-                                    {icon}
-                                </span>
+                    <div className="relative px-8 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
+                        <div className="relative">
+                            <div className="w-32 h-32 rounded-3xl border-4 border-surface bg-gradient-to-br from-primary to-primary-container shadow-xl flex items-center justify-center">
+                                <span className="text-white text-5xl font-extrabold font-headline">{initials}</span>
                             </div>
-                            <span className="text-xs font-bold text-outline px-2 py-1 bg-surface-container rounded-full">{badge}</span>
                         </div>
-                        <div>
-                            <p className="text-outline text-sm font-medium">{label}</p>
-                            <h3 className="text-3xl font-extrabold text-on-surface font-headline mt-1">{value}</h3>
-                        </div>
-                    </div>
-                ))}
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Flashcard Mastery */}
-                <div className="lg:col-span-2 bg-surface-container-lowest rounded-xl p-8 shadow-sm border border-outline-variant/10">
-                    <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-xl font-bold font-headline">{t('profile.flashcard_mastery')}</h2>
-                        <span className="text-sm font-bold text-primary">
-                            {t('profile.cards_total').replace('{count}', progress.length)}
-                        </span>
+                        <div className="flex-grow pb-2">
+                            <h1 className="text-4xl font-extrabold tracking-tight text-on-surface font-headline leading-tight">
+                                {user?.username}
+                            </h1>
+                            <p className="text-on-surface-variant font-semibold mt-1">{user?.email} • {user?.role}</p>
+                        </div>
+
+                        <div className="pb-2">
+                            <button onClick={() => { setEditMode(e => !e); setMsg('') }}
+                                    className="px-6 py-3 bg-primary text-white rounded-full font-headline font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:bg-primary-container active:scale-95 transition-all">
+                                <span className="material-symbols-outlined text-sm">
+                                    {editMode ? 'close' : 'edit'}
+                                </span>
+                                {editMode ? t('common.cancel') : t('profile.edit_profile')}
+                            </button>
+                        </div>
                     </div>
-                    <div className="space-y-6">
-                        {[
-                            { label: t('home.mastered'),  value: mastered,  color: 'from-primary to-primary-container', textColor: 'text-primary' },
-                            { label: t('home.reviewing'), value: reviewing, color: 'from-secondary to-secondary-container', textColor: 'text-secondary' },
-                            { label: t('home.learning'),  value: learning,  color: 'from-tertiary to-tertiary-container', textColor: 'text-tertiary' },
-                        ].map(({ label, value, color, textColor }) => (
-                            <div key={label}>
-                                <div className="flex justify-between mb-2">
-                                    <span className="text-sm font-bold text-on-surface">{label}</span>
-                                    <span className={`text-sm font-bold ${textColor}`}>
-                                        {t('profile.cards_count').replace('{count}', value)}
+                </section>
+
+                {msg && (
+                    <div className={`mb-8 px-4 py-3 rounded-2xl text-xs font-bold ${
+                        msg.includes('Error') || msg.includes('error') || msg.includes('Lỗi') || msg.includes('lỗi') ? 'bg-error-container/20 border border-error/10 text-error' : 'bg-primary-fixed text-primary'
+                    }`}>
+                        {msg}
+                    </div>
+                )}
+
+                {/* Stats bento */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                    {[
+                        { icon: 'history_edu', iconBg: 'bg-primary-fixed text-primary', label: t('profile.total_reviews'), value: stats.totalReviews, badge: t('profile.all_time') },
+                        { icon: 'pending_actions', iconBg: 'bg-tertiary-fixed text-tertiary', iconFill: true, label: t('profile.due_today'), value: stats.dueCards, badge: t('profile.due_today_badge') },
+                        { icon: 'quiz', iconBg: 'bg-primary/10 text-primary', label: t('profile.quiz_attempts'), value: stats.quizCount, badge: t('profile.total_badge') },
+                        { icon: 'analytics', iconBg: 'bg-surface-container text-on-surface-variant', label: t('profile.avg_quiz_score'), value: `${stats.avgScore}/100`, badge: t('profile.average_badge') },
+                    ].map(({ icon, iconBg, iconFill, label, value, badge }) => (
+                        <div key={label} className="bg-surface-container-lowest p-6 rounded-[2rem] shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:-translate-y-1 transition-transform ease-out-expo duration-300">
+                            <div className="flex justify-between items-start mb-4">
+                                <div className={`p-3 rounded-2xl ${iconBg}`}>
+                                    <span className="material-symbols-outlined" style={{ fontVariationSettings: iconFill ? "'FILL' 1" : "'FILL' 0" }}>
+                                        {icon}
                                     </span>
                                 </div>
-                                <div className="w-full h-2.5 bg-surface-variant rounded-full overflow-hidden">
-                                    <div className={`h-full bg-gradient-to-r ${color} rounded-full transition-all duration-700`}
-                                         style={{ width: `${Math.round((value / total) * 100)}%` }} />
-                                </div>
+                                <span className="text-[10px] font-bold text-outline px-2.5 py-1 bg-surface-container rounded-full">{badge}</span>
                             </div>
-                        ))}
-                    </div>
+                            <div>
+                                <p className="text-outline text-xs font-bold tracking-wide uppercase">{label}</p>
+                                <h3 className="text-3xl font-black text-on-surface font-headline mt-1">{value}</h3>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Settings Column */}
-                <div className="space-y-6">
-                    {/* Edit profile */}
-                    <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
-                        <h3 className="font-headline font-bold text-lg mb-4 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-primary">manage_accounts</span>
-                            {t('profile.profile_settings')}
-                        </h3>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-xs font-bold text-outline uppercase tracking-wider block mb-1">{t('common.username')}</label>
-                                <input
-                                    value={form.username}
-                                    onChange={e => setForm({ ...form, username: e.target.value })}
-                                    disabled={!editMode}
-                                    className="w-full px-4 py-3 bg-surface-container-low rounded-DEFAULT text-sm border border-outline-variant/20 focus:ring-2 focus:ring-primary outline-none disabled:opacity-60"
-                                />
-                            </div>
-                            {editMode && (
-                                <button onClick={handleSaveProfile} disabled={saving}
-                                        className="w-full py-3 bg-primary text-on-primary rounded-DEFAULT font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all disabled:opacity-50">
-                                    {saving ? t('common.loading') : t('profile.save_changes')}
-                                </button>
-                            )}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Flashcard Mastery */}
+                    <div className="lg:col-span-2 bg-surface-container-lowest rounded-[2.5rem] p-8 shadow-sm border border-outline-variant/30">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-xl font-extrabold font-headline text-on-surface tracking-tight">{t('profile.flashcard_mastery')}</h2>
+                            <span className="text-xs font-bold text-primary bg-primary-fixed px-3 py-1 rounded-full">
+                                {t('profile.cards_total').replace('{count}', progress.length)}
+                            </span>
                         </div>
-                    </div>
-
-                    {/* App Language Switcher */}
-                    <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
-                        <h3 className="font-headline font-bold text-lg mb-4 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-secondary">language</span>
-                            {t('profile.app_language')}
-                        </h3>
-                        <p className="text-xs text-on-surface-variant mb-4 font-medium">
-                            {t('profile.lang_desc')}
-                        </p>
-                        <div className="grid grid-cols-2 gap-2">
-                            {locales.map((l) => (
-                                <button
-                                    key={l.code}
-                                    onClick={() => setLocale(l.code)}
-                                    className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all text-left
-                                        ${locale === l.code
-                                        ? 'border-secondary bg-secondary/5 text-secondary shadow-sm'
-                                        : 'border-transparent bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
-                                    }`}
-                                >
-                                    <div className="flex flex-col items-start overflow-hidden">
-                                        <span className="text-xs font-bold uppercase tracking-wider">{l.labelShort || l.code}</span>
-                                        <span className="text-[10px] opacity-60 font-medium truncate w-full">{l.name}</span>
-                                    </div>
-                                    {locale === l.code && (
-                                        <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
-                                            check_circle
+                        <div className="space-y-6">
+                            {[
+                                { label: t('home.mastered'),  value: mastered,  color: 'from-primary to-primary-container', textColor: 'text-primary' },
+                                { label: t('home.reviewing'), value: reviewing, color: 'from-secondary to-secondary-container', textColor: 'text-secondary' },
+                                { label: t('home.learning'),  value: learning,  color: 'from-tertiary to-tertiary-container', textColor: 'text-tertiary' },
+                            ].map(({ label, value, color, textColor }) => (
+                                <div key={label}>
+                                    <div className="flex justify-between mb-2">
+                                        <span className="text-sm font-bold text-on-surface">{label}</span>
+                                        <span className={`text-sm font-bold ${textColor}`}>
+                                            {t('profile.cards_count').replace('{count}', value)}
                                         </span>
-                                    )}
-                                </button>
+                                    </div>
+                                    <div className="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+                                        <div className={`h-full bg-gradient-to-r ${color} rounded-full transition-all duration-750`}
+                                             style={{ width: `${Math.round((value / total) * 100)}%` }} />
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* Change password */}
-                    <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
-                        <h3 className="font-headline font-bold text-lg mb-4 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-tertiary">lock</span>
-                            {t('profile.password_change')}
-                        </h3>
-                        <div className="space-y-3">
-                            <input
-                                type="password"
-                                placeholder={t('profile.current_password')}
-                                value={pwForm.oldPassword}
-                                onChange={e => setPwForm({ ...pwForm, oldPassword: e.target.value })}
-                                className="w-full px-4 py-3 bg-surface-container-low rounded-DEFAULT text-sm border border-outline-variant/20 focus:ring-2 focus:ring-primary outline-none"
-                            />
-                            <input
-                                type="password"
-                                placeholder={t('profile.new_password')}
-                                value={pwForm.newPassword}
-                                onChange={e => setPwForm({ ...pwForm, newPassword: e.target.value })}
-                                className="w-full px-4 py-3 bg-surface-container-low rounded-DEFAULT text-sm border border-outline-variant/20 focus:ring-2 focus:ring-primary outline-none"
-                            />
-                            <button onClick={handleChangePassword} disabled={saving}
-                                    className="w-full py-3 border-2 border-tertiary text-tertiary rounded-DEFAULT font-bold text-sm hover:bg-tertiary-fixed transition-all disabled:opacity-50">
-                                {saving ? t('common.loading') : t('profile.update_password')}
-                            </button>
+                    {/* Settings Column */}
+                    <div className="space-y-6">
+                        {/* Edit profile settings */}
+                        <div className="bg-surface-container-lowest rounded-[2rem] p-6 shadow-sm border border-outline-variant/30">
+                            <h3 className="font-headline font-bold text-lg text-on-surface mb-4 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary">manage_accounts</span>
+                                {t('profile.profile_settings')}
+                            </h3>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-[10px] font-bold text-outline uppercase tracking-wider block mb-1">{t('common.username')}</label>
+                                    <input
+                                        value={form.username}
+                                        onChange={e => setForm({ ...form, username: e.target.value })}
+                                        disabled={!editMode}
+                                        className="w-full px-4 py-3 bg-surface-container-low rounded-2xl text-sm border border-outline-variant/20 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:opacity-60 font-semibold"
+                                    />
+                                </div>
+                                {editMode && (
+                                    <button onClick={handleSaveProfile} disabled={saving}
+                                            className="w-full py-3 bg-primary text-white rounded-2xl font-bold text-sm shadow-md shadow-primary/10 hover:bg-primary-container active:scale-95 transition-all disabled:opacity-50">
+                                        {saving ? t('common.loading') : t('profile.save_changes')}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* App Language Switcher */}
+                        <div className="bg-surface-container-lowest rounded-[2rem] p-6 shadow-sm border border-outline-variant/30">
+                            <h3 className="font-headline font-bold text-lg text-on-surface mb-4 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary">language</span>
+                                {t('profile.app_language')}
+                            </h3>
+                            <p className="text-xs text-on-surface-variant mb-4 font-medium leading-relaxed">
+                                {t('profile.lang_desc')}
+                            </p>
+                            <div className="grid grid-cols-2 gap-2">
+                                {locales.map((l) => (
+                                    <button
+                                        key={l.code}
+                                        onClick={() => setLocale(l.code)}
+                                        className={`flex items-center justify-between px-4 py-3 rounded-2xl border transition-all text-left active:scale-95
+                                            ${locale === l.code
+                                            ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                                            : 'border-outline-variant/20 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
+                                        }`}
+                                    >
+                                        <div className="flex flex-col items-start overflow-hidden">
+                                            <span className="text-xs font-bold uppercase tracking-wider">{l.labelShort || l.code}</span>
+                                            <span className="text-[10px] opacity-60 font-medium truncate w-full">{l.name}</span>
+                                        </div>
+                                        {locale === l.code && (
+                                            <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+                                                check_circle
+                                            </span>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Change password */}
+                        <div className="bg-surface-container-lowest rounded-[2rem] p-6 shadow-sm border border-outline-variant/30">
+                            <h3 className="font-headline font-bold text-lg text-on-surface mb-4 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary">lock</span>
+                                {t('profile.password_change')}
+                            </h3>
+                            <div className="space-y-3">
+                                <input
+                                    type="password"
+                                    placeholder={t('profile.current_password')}
+                                    value={pwForm.oldPassword}
+                                    onChange={e => setPwForm({ ...pwForm, oldPassword: e.target.value })}
+                                    className="w-full px-4 py-3 bg-surface-container-low rounded-2xl text-sm border border-outline-variant/20 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-semibold"
+                                />
+                                <input
+                                    type="password"
+                                    placeholder={t('profile.new_password')}
+                                    value={pwForm.newPassword}
+                                    onChange={e => setPwForm({ ...pwForm, newPassword: e.target.value })}
+                                    className="w-full px-4 py-3 bg-surface-container-low rounded-2xl text-sm border border-outline-variant/20 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-semibold"
+                                />
+                                <button onClick={handleChangePassword} disabled={saving}
+                                        className="w-full py-3 border border-primary/20 hover:border-primary text-primary rounded-2xl font-bold text-sm hover:bg-primary-fixed transition-all disabled:opacity-50 active:scale-95">
+                                    {saving ? t('common.loading') : t('profile.update_password')}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

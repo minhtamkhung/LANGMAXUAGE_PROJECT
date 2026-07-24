@@ -1,6 +1,7 @@
 package com.dmt.toeicapp.user.controller;
 
 import com.dmt.toeicapp.common.response.ApiResponse;
+import com.dmt.toeicapp.common.security.RateLimit;
 import com.dmt.toeicapp.user.dto.AuthResponse;
 import com.dmt.toeicapp.user.dto.ForgotPasswordRequest;
 import com.dmt.toeicapp.user.dto.GoogleLoginRequest;
@@ -24,6 +25,7 @@ public class AuthController {
     private final AuthService authService;
 
     // ── Đăng ký thường (không OTP) ────────────────────────────────
+    @RateLimit(requests = 5, durationSeconds = 60, keyType = RateLimit.KeyType.IP)
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(
             @Valid @RequestBody RegisterRequest request) {
@@ -35,6 +37,7 @@ public class AuthController {
     // ── Đăng ký có OTP (2 bước) ──────────────────────────────────
 
     /** Bước 1: validate info → gửi OTP qua email */
+    @RateLimit(requests = 3, durationSeconds = 60, keyType = RateLimit.KeyType.IP)
     @PostMapping("/send-otp")
     public ResponseEntity<ApiResponse<Void>> sendOtp(
             @Valid @RequestBody SendOtpRequest request) {
@@ -53,6 +56,7 @@ public class AuthController {
         );
     }
 
+    @RateLimit(requests = 5, durationSeconds = 60, keyType = RateLimit.KeyType.IP)
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(
             @Valid @RequestBody LoginRequest request) {
@@ -61,6 +65,7 @@ public class AuthController {
         );
     }
 
+    @RateLimit(requests = 5, durationSeconds = 60, keyType = RateLimit.KeyType.IP)
     @PostMapping("/google")
     public ResponseEntity<ApiResponse<AuthResponse>> loginWithGoogle(
             @Valid @RequestBody GoogleLoginRequest request) {
@@ -69,6 +74,7 @@ public class AuthController {
         );
     }
 
+    @RateLimit(requests = 3, durationSeconds = 60, keyType = RateLimit.KeyType.IP)
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<Void>> forgotPassword(
             @Valid @RequestBody ForgotPasswordRequest request) {

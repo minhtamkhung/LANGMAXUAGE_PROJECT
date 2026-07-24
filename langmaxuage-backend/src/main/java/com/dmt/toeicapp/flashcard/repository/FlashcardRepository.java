@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
@@ -35,6 +36,8 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
     // Tìm flashcard active theo id — tránh lấy card đã bị soft delete
     Optional<Flashcard> findByIdAndActiveTrue(Long id);
 
+    List<Flashcard> findByTopicIdAndActiveTrue(Long topicId);
+
     // Kiểm tra word trùng trong cùng một topic (tránh duplicate)
     boolean existsByWordAndTopicIdAndActiveTrue(String word, Long topicId);
 
@@ -54,4 +57,22 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
               AND (f.createdBy.id = :userId OR f.createdBy.role = com.dmt.toeicapp.user.entity.User.Role.ADMIN)
             """)
     long countByTopicId(@Param("topicId") Long topicId, @Param("userId") Long userId);
+
+    // ── JOIN FETCH queries — load relatedWords kèm để tránh N+1 ──
+
+    @Query("""
+            SELECT DISTINCT f FROM Flashcard f
+            LEFT JOIN FETCH f.relatedWords
+            WHERE f.active = true
+              AND f.id IN :ids
+            """)
+    List<Flashcard> findWithRelatedWordsByIds(@Param("ids") List<Long> ids);
+
+    @Query("""
+            SELECT f FROM Flashcard f
+            LEFT JOIN FETCH f.relatedWords
+            WHERE f.id = :id
+              AND f.active = true
+            """)
+    Optional<Flashcard> findByIdWithRelatedWords(@Param("id") Long id);
 }

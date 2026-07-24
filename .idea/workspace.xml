@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5b944a25-cac8-47ff-a1cb-bc77749511ce" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/langmaxuage-frontend/src/api/axiosInstance.js" beforeDir="false" afterPath="$PROJECT_DIR$/langmaxuage-frontend/src/api/axiosInstance.js" afterDir="false" />
-    </list>
+    <list default="true" id="5b944a25-cac8-47ff-a1cb-bc77749511ce" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -142,6 +139,7 @@
       <workItem from="1780739897618" duration="374000" />
       <workItem from="1780740594942" duration="907000" />
       <workItem from="1780906000572" duration="13000" />
+      <workItem from="1782312037572" duration="40000" />
     </task>
     <servers />
   </component>

@@ -11,6 +11,7 @@ const flashcardApi = {
         api.get(`/flashcards/${id}`, { params: { locale, includeAllLocales } }),
 
     create:       (data)      => api.post('/flashcards', data),
+    createBulk:   (data)      => api.post('/flashcards/bulk', data),
     update:       (id, data)  => api.put(`/flashcards/${id}`, data),
     delete:       (id)        => api.delete(`/flashcards/${id}`),
     uploadImage:  (id, file)  => {

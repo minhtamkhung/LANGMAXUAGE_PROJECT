@@ -124,7 +124,7 @@ export default function HomePage() {
                     value={dueCount}
                     footer={
                         <button onClick={() => navigate('/study')}
-                                className="mt-6 w-full py-3 bg-tertiary text-white rounded-xl font-bold text-sm hover:bg-tertiary-container hover:scale-[1.02] active:scale-95 shadow-lg shadow-tertiary/20 transition-all">
+                                className="mt-6 w-full py-3.5 bg-tertiary text-white rounded-2xl font-bold text-sm hover:bg-tertiary-container active:scale-[0.98] shadow-md shadow-tertiary/15 transition-all">
                             {t('home.review_now')}
                         </button>
                     }
@@ -135,7 +135,7 @@ export default function HomePage() {
                     label={t('home.streak_label')}
                     value={`${streak} 🔥`}
                     footer={
-                        <div className="mt-6 text-xs text-on-surface-variant flex flex-col gap-1">
+                        <div className="mt-6 text-xs text-on-surface-variant flex flex-col gap-1.5">
                             <p className="font-semibold text-emerald-600 flex items-center gap-1">
                                 <span className="material-symbols-outlined text-sm">trending_up</span> {t('home.hard_work')}
                             </p>
@@ -155,36 +155,36 @@ export default function HomePage() {
                 {/* Recent activity */}
                 <div className="lg:col-span-2 space-y-6">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-2xl font-bold font-headline">{t('home.recent_quiz_history')}</h3>
-                        <button onClick={() => navigate('/quiz')}
+                        <h3 className="text-2xl font-bold font-headline text-on-surface">{t('home.recent_quiz_history')}</h3>
+                        <button onClick={() => navigate('/profile')}
                                 className="text-primary font-bold text-sm hover:underline">
                             {t('home.view_all')}
                         </button>
                     </div>
-                    <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+                    <div className="bg-surface-container-lowest rounded-[2rem] border border-outline-variant/30 shadow-sm overflow-hidden">
                         {history.length === 0 ? (
-                            <div className="p-8 text-center text-on-surface-variant">
-                                <span className="material-symbols-outlined text-4xl mb-2 block">quiz</span>
-                                <p className="text-sm">{t('home.no_quizzes')}</p>
+                            <div className="p-10 text-center text-on-surface-variant">
+                                <span className="material-symbols-outlined text-4xl mb-3 block text-outline">quiz</span>
+                                <p className="text-sm font-medium">{t('home.no_quizzes')}</p>
                             </div>
                         ) : (
-                            <div className="divide-y divide-surface-container">
+                            <div className="divide-y divide-outline-variant/20">
                                 {history.slice(0, 3).map(attempt => (
                                     <div key={attempt.attemptId}
-                                         className="p-5 flex items-center justify-between hover:bg-surface-container transition-colors group">
+                                         className="p-6 flex items-center justify-between hover:bg-surface-container/30 transition-colors group">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-primary-fixed transition-colors">
+                                            <div className="w-12 h-12 rounded-2xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-primary-fixed group-hover:text-primary transition-colors duration-300">
                                                 <span className="material-symbols-outlined">quiz</span>
                                             </div>
                                             <div>
-                                                <p className="font-bold text-on-surface">{attempt.topicName}</p>
-                                                <p className="text-xs text-outline font-medium">
+                                                <p className="font-bold text-on-surface text-base">{attempt.topicName}</p>
+                                                <p className="text-xs text-outline font-semibold mt-0.5">
                                                     {attempt.correctAnswers}/{attempt.totalQuestions} {t('home.correct')}
                                                 </p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <span className={`text-xs font-bold px-3 py-1 rounded-full border
+                                            <span className={`text-xs font-bold px-3 py-1.5 rounded-full border
                                                 ${attempt.score >= 70
                                                   ? 'text-emerald-600 bg-emerald-50 border-emerald-100'
                                                   : 'text-tertiary bg-tertiary-fixed border-tertiary-fixed-dim'
@@ -202,7 +202,7 @@ export default function HomePage() {
                 {/* Heatmap & Quick actions side column */}
                 <div className="space-y-6">
                     {/* Heatmap Widget */}
-                    <div className="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-4">
+                    <div className="bg-surface-container-lowest p-6 rounded-[2rem] border border-outline-variant/30 shadow-sm space-y-4">
                         <div className="flex items-center justify-between">
                             <h4 className="font-headline font-bold text-sm flex items-center gap-1.5 text-on-surface">
                                 <span className="material-symbols-outlined text-primary text-lg">calendar_month</span>
@@ -214,15 +214,15 @@ export default function HomePage() {
                             {heatmapDays.map((day, idx) => {
                                 const count = day.count
                                 let color = 'bg-surface-container-high' // default empty
-                                if (count > 0 && count <= 2)   color = 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                                else if (count > 2 && count <= 5) color = 'bg-emerald-300 border border-emerald-400'
+                                if (count > 0 && count <= 2)   color = 'bg-emerald-100/70 border border-emerald-200/50'
+                                else if (count > 2 && count <= 5) color = 'bg-emerald-300/80 border border-emerald-400/50'
                                 else if (count > 5)               color = 'bg-emerald-500 border border-emerald-600'
                                 
                                 return (
                                     <div
                                         key={idx}
                                         title={`${day.date.toLocaleDateString()}: ${count} ${t('home.activities')}`}
-                                        className={`w-6 h-6 rounded-md transition-all duration-200 hover:scale-110 cursor-help ${color}`}
+                                        className={`w-6 h-6 rounded-[6px] transition-all duration-300 hover:scale-115 cursor-help ${color}`}
                                     />
                                 )
                             })}
@@ -230,32 +230,32 @@ export default function HomePage() {
                         <div className="flex justify-between items-center text-[10px] text-outline px-1">
                             <span>{t('home.less_study')}</span>
                             <div className="flex gap-1">
-                                <div className="w-2.5 h-2.5 bg-surface-container-high rounded-sm" />
-                                <div className="w-2.5 h-2.5 bg-emerald-100 rounded-sm" />
-                                <div className="w-2.5 h-2.5 bg-emerald-300 rounded-sm" />
-                                <div className="w-2.5 h-2.5 bg-emerald-500 rounded-sm" />
+                                <div className="w-2.5 h-2.5 bg-surface-container-high rounded-[3px]" />
+                                <div className="w-2.5 h-2.5 bg-emerald-100 rounded-[3px]" />
+                                <div className="w-2.5 h-2.5 bg-emerald-300 rounded-[3px]" />
+                                <div className="w-2.5 h-2.5 bg-emerald-500 rounded-[3px]" />
                             </div>
                             <span>{t('home.more_study')}</span>
                         </div>
                     </div>
 
                     {/* Next Review Indicator */}
-                    <div className="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-3">
+                    <div className="bg-surface-container-lowest p-6 rounded-[2rem] border border-outline-variant/30 shadow-sm space-y-3">
                         <h4 className="font-headline font-bold text-sm flex items-center gap-1.5 text-on-surface">
                             <span className="material-symbols-outlined text-tertiary text-lg">alarm</span>
                             {t('home.next_review_schedule')}
                         </h4>
                         {dueCount > 0 ? (
-                            <div className="p-3 bg-rose-50 border border-rose-100 rounded-xl">
+                            <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl">
                                 <p className="text-xs font-bold text-rose-700">{t('home.words_due_warning')}</p>
-                                <p className="text-[10px] text-rose-600 mt-0.5">
+                                <p className="text-[10px] text-rose-600 mt-1 font-medium">
                                     {t('home.words_due_count').replace('{count}', dueCount)}
                                 </p>
                             </div>
                         ) : nextReviewCard ? (
-                            <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+                            <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl">
                                 <p className="text-xs font-bold text-emerald-800">{t('home.all_caught_up')}</p>
-                                <p className="text-[10px] text-emerald-600 mt-1 leading-relaxed">
+                                <p className="text-[10px] text-emerald-600 mt-1 leading-relaxed font-medium">
                                     {t('home.next_word_due')
                                         .replace('{word}', nextReviewCard.flashcard?.word)
                                         .replace('{time}', new Date(nextReviewCard.nextReviewAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))
@@ -268,8 +268,8 @@ export default function HomePage() {
                         )}
                     </div>
 
-                    <div className="space-y-3">
-                        <h3 className="text-lg font-bold font-headline">{t('home.quick_start')}</h3>
+                    <div className="space-y-3.5">
+                        <h3 className="text-lg font-bold font-headline text-on-surface">{t('home.quick_start')}</h3>
                         <QuickAction
                             icon="style" label={t('home.browse_flashcards')}
                             sub={t('home.explore_all_cards')}
@@ -286,6 +286,16 @@ export default function HomePage() {
                             sub={t('home.test_your_knowledge')}
                             onClick={() => navigate('/quiz')}
                         />
+                        <QuickAction
+                            icon="keyboard" label={t('home.typing_practice')}
+                            sub={t('home.improve_spelling')}
+                            onClick={() => navigate('/typing')}
+                        />
+                        <QuickAction
+                            icon="shuffle" label={t('home.matching_game')}
+                            sub={t('home.connect_words_defs')}
+                            onClick={() => navigate('/matching')}
+                        />
                     </div>
                 </div>
             </div>
@@ -296,22 +306,24 @@ export default function HomePage() {
 function StatCard({ icon, iconFill, iconColor = 'text-primary', iconBg = 'bg-primary/10',
                       badge, badgeColor, label, value, footer }) {
     return (
-        <div className="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-            <div className="flex justify-between items-start mb-4">
-                <div className={`p-3 ${iconBg} rounded-2xl ${iconColor}`}>
-          <span className="material-symbols-outlined"
-                style={{ fontVariationSettings: iconFill ? "'FILL' 1" : "'FILL' 0" }}>
-            {icon}
-          </span>
+        <div className="bg-surface-container-lowest p-8 rounded-[2rem] border border-outline-variant/30 hover:border-primary/20 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between min-h-[220px]">
+            <div>
+                <div className="flex justify-between items-start mb-5">
+                    <div className={`p-3 ${iconBg} rounded-2xl ${iconColor}`}>
+                        <span className="material-symbols-outlined text-2xl"
+                              style={{ fontVariationSettings: iconFill ? "'FILL' 1" : "'FILL' 0" }}>
+                            {icon}
+                        </span>
+                    </div>
+                    <span className={`text-[10px] font-bold px-3 py-1.5 rounded-full ${badgeColor}`}>
+                        {badge}
+                    </span>
                 </div>
-                <span className={`text-xs font-bold px-2 py-1 rounded-full ${badgeColor}`}>
-          {badge}
-        </span>
+                <h3 className="text-outline font-label text-xs font-bold uppercase tracking-wider">
+                    {label}
+                </h3>
+                <p className="text-5xl font-extrabold font-headline mt-2 text-on-surface leading-none">{value}</p>
             </div>
-            <h3 className="text-outline font-label text-sm font-semibold uppercase tracking-wider">
-                {label}
-            </h3>
-            <p className="text-5xl font-extrabold font-headline mt-2 text-on-surface">{value}</p>
             {footer}
         </div>
     )
@@ -320,21 +332,21 @@ function StatCard({ icon, iconFill, iconColor = 'text-primary', iconBg = 'bg-pri
 function QuickAction({ icon, label, sub, onClick, gradient }) {
     return (
         <button onClick={onClick}
-                className={`w-full p-5 rounded-xl text-left transition-all hover:scale-[1.02] active:scale-95
+                className={`w-full p-5 rounded-2xl text-left border transition-all hover:scale-[1.01] hover:-translate-y-0.5 active:scale-[0.99] active:translate-y-0
         ${gradient
-                    ? 'bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-lg shadow-primary/20'
-                    : 'bg-surface-container-lowest hover:shadow-md border border-outline-variant/10'
+                    ? 'bg-gradient-to-br from-primary to-primary-container text-on-primary border-transparent shadow-lg shadow-primary/15'
+                    : 'bg-surface-container-lowest hover:shadow-md border-outline-variant/30 hover:border-primary/20'
                 }`}>
-            <div className="flex items-center gap-3">
-        <span className="material-symbols-outlined"
-              style={{ fontVariationSettings: "'FILL' 1" }}>
-          {icon}
-        </span>
+            <div className="flex items-center gap-4">
+                <span className="material-symbols-outlined text-2xl"
+                      style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {icon}
+                </span>
                 <div>
-                    <p className={`font-bold font-headline text-sm ${gradient ? '' : 'text-on-surface'}`}>
+                    <p className={`font-bold font-headline text-sm ${gradient ? 'text-white' : 'text-on-surface'}`}>
                         {label}
                     </p>
-                    <p className={`text-xs mt-0.5 ${gradient ? 'text-on-primary/70' : 'text-outline'}`}>
+                    <p className={`text-xs mt-0.5 ${gradient ? 'text-white/70' : 'text-outline'}`}>
                         {sub}
                     </p>
                 </div>

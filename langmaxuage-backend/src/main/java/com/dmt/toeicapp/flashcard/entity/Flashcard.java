@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "flashcards")
@@ -48,6 +50,12 @@ public class Flashcard {
     @Column(name = "image_public_id", length = 200)
     private String imagePublicId;      // Cloudinary public_id — dùng để xóa ảnh
 
+    @Column(name = "audio_url", length = 500)
+    private String audioUrl;
+
+    @Column(name = "part_of_speech", length = 50)
+    private String partOfSpeech;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     @Builder.Default
@@ -64,6 +72,10 @@ public class Flashcard {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
+
+    @OneToMany(mappedBy = "flashcard", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<FlashcardRelatedWord> relatedWords = new ArrayList<>();
 
     public enum Difficulty {
         EASY, MEDIUM, HARD

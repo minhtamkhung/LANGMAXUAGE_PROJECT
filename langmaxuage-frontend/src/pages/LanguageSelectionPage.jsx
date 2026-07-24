@@ -1,144 +1,131 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
+import { useAuth } from '../context/AuthContext'
 
 const FLAG_EMOJIS = {
     en: '🇺🇸', vi: '🇻🇳', ja: '🇯🇵', ko: '🇰🇷',
 }
+
 const LEVEL_MAP = {
-    en: { label: 'Advanced',     w: 'w-4/5',  badge: 'Global Edition'   },
-    vi: { label: 'Intermediate', w: 'w-3/5',  badge: 'Popular Choice'   },
-    ja: { label: 'Beginner',     w: 'w-1/4',  badge: 'Regional'         },
-    ko: { label: 'New',          w: 'w-1/12', badge: 'Regional'         },
+    en: { label: 'Advanced',     w: 'w-4/5',  badge: 'Global Edition', color: 'text-primary bg-primary/10' },
+    vi: { label: 'Intermediate', w: 'w-3/5',  badge: 'Popular Choice', color: 'text-emerald-500 bg-emerald-500/10' },
+    ja: { label: 'Beginner',     w: 'w-1/4',  badge: 'Regional Edition', color: 'text-amber-500 bg-amber-500/10' },
+    ko: { label: 'New',          w: 'w-1/12', badge: 'Regional Edition', color: 'text-rose-500 bg-rose-500/10' },
 }
 
 export default function LanguageSelectionPage() {
     const { locale, setLocale, locales } = useLanguage()
+    const { user }                       = useAuth()
     const [selected, setSelected]        = useState(locale)
     const navigate                       = useNavigate()
 
     const handleStart = () => {
         setLocale(selected)
-        navigate('/home')
+        if (user) {
+            navigate('/home')
+        } else {
+            navigate('/')
+        }
     }
 
     return (
-        <div className="bg-surface font-body text-on-surface min-h-screen relative overflow-hidden">
-            {/* Abstract Background */}
-            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-br from-primary-fixed to-transparent blur-3xl" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-secondary-fixed to-transparent blur-3xl" />
-            </div>
+        <div className="bg-surface font-body text-on-surface min-h-screen relative overflow-hidden flex items-center justify-center p-6 selection:bg-primary/20">
+            {/* Ambient Background Glows */}
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] aspect-square rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] aspect-square rounded-full bg-secondary/5 blur-[120px] pointer-events-none" />
 
-            {/* Top nav */}
-            <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl flex justify-between items-center px-6 h-16 shadow-[0_40px_40px_-5px_rgba(25,28,30,0.06)]">
-                <span className="text-xl font-bold text-on-surface font-headline tracking-tight">
-                    TOEIC Sanctuary
-                </span>
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high">
-                    <span className="material-symbols-outlined text-lg">language</span>
-                    <span className="text-sm font-bold font-label tracking-tight">
-                        {selected.toUpperCase()}
-                    </span>
+            <div className="relative z-10 w-full max-w-5xl bg-surface-container-low border border-outline-variant/15
+                            rounded-[2.5rem] shadow-2xl p-8 md:p-12 transition-all duration-300">
+                
+                {/* Header Section */}
+                <div className="text-center mb-12 space-y-3">
+                    <span className="text-[10px] font-black text-secondary uppercase tracking-[0.25em]">LangMaxuage Preferences</span>
+                    <h1 className="text-4xl md:text-5xl font-black font-headline tracking-tighter text-on-surface leading-none">
+                        Choose Your Language
+                    </h1>
+                    <p className="text-on-surface-variant text-sm font-semibold max-w-md mx-auto leading-relaxed">
+                        Select the target language to customize your learning and interface experience.
+                    </p>
                 </div>
-            </header>
 
-            {/* Main content */}
-            <main className="relative z-10 min-h-screen pt-28 pb-16 flex flex-col items-center justify-center px-6">
-                <div className="w-full max-w-5xl mx-auto">
-                    {/* Header */}
-                    <div className="text-center mb-14 space-y-4">
-                        <h1 className="text-5xl font-extrabold font-headline tracking-tight text-on-surface">
-                            Choose Your Language
-                        </h1>
-                        <p className="text-on-surface-variant text-lg max-w-md mx-auto">
-                            Select the target language to customize your TOEIC learning experience.
+                {/* Grid of Languages */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    {locales.map(lang => {
+                        const isActive = selected === lang.code
+                        const meta = LEVEL_MAP[lang.code] || { label: 'Available', w: 'w-1/2', badge: 'Global', color: 'text-primary bg-primary/10' }
+                        const flag = FLAG_EMOJIS[lang.code] || '🌐'
+                        return (
+                            <button
+                                key={lang.code}
+                                onClick={() => setSelected(lang.code)}
+                                className={`group flex flex-col p-6 bg-surface-container-lowest rounded-3xl border-2 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98] relative overflow-hidden text-left
+                                    ${isActive
+                                        ? 'border-primary bg-primary/5 shadow-md shadow-primary/5'
+                                        : 'border-outline-variant/15 hover:border-outline-variant/40 bg-surface-container-low'
+                                    }`}
+                            >
+                                {/* Checkmark Indicator */}
+                                {isActive && (
+                                    <div className="absolute top-4 right-4 text-primary">
+                                        <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                                            check_circle
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Flag Emoji Container */}
+                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-sm transition-all duration-300
+                                    ${isActive ? 'bg-primary-container/20 scale-105' : 'bg-surface-container'}`}>
+                                    {flag}
+                                </div>
+
+                                {/* Language metadata */}
+                                <div className="mb-6 flex-1 flex flex-col justify-end">
+                                    <h3 className="text-xl font-bold font-headline text-on-surface mb-1.5 leading-tight">{lang.name}</h3>
+                                    <div className={`inline-block self-start px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase ${meta.color}`}>
+                                        {meta.badge}
+                                    </div>
+                                </div>
+
+                                {/* Progress bar popularity indicator */}
+                                <div className="w-full space-y-2 mt-auto">
+                                    <div className="flex justify-between text-[11px] font-bold text-on-surface-variant">
+                                        <span className="opacity-80">Interface</span>
+                                        <span className="text-primary">{meta.label}</span>
+                                    </div>
+                                    <div className="h-1.5 w-full bg-surface-container rounded-full overflow-hidden shadow-inner">
+                                        <div className={`h-full bg-primary rounded-full transition-all duration-500 ${meta.w}`} />
+                                    </div>
+                                </div>
+                            </button>
+                        )
+                    })}
+                </div>
+
+                {/* Footer / CTA Actions */}
+                <div className="flex flex-col items-center gap-6 pt-6 border-t border-outline-variant/10">
+                    <button
+                        onClick={handleStart}
+                        className="group flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-primary to-primary-container
+                                   text-on-primary font-bold rounded-2xl shadow-lg shadow-primary/25 hover:shadow-primary/35
+                                   transition-all hover:scale-[1.01] active:scale-95 text-base"
+                    >
+                        <span>Let's Start</span>
+                        <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">
+                            arrow_forward
+                        </span>
+                    </button>
+
+                    <div className="flex items-center gap-2.5 px-5 py-3 bg-surface-container rounded-2xl border border-outline-variant/10">
+                        <span className="material-symbols-outlined text-primary text-base">info</span>
+                        <p className="text-xs font-bold text-on-surface-variant">
+                            You can change your language anytime from the sidebar or profile settings.
                         </p>
                     </div>
-
-                    {/* Bento Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-14">
-                        {locales.map(lang => {
-                            const isActive  = selected === lang.code
-                            const meta      = LEVEL_MAP[lang.code] || { label: 'Available', w: 'w-1/2', badge: 'Global' }
-                            const flag      = FLAG_EMOJIS[lang.code] || '🌐'
-                            return (
-                                <button
-                                    key={lang.code}
-                                    onClick={() => setSelected(lang.code)}
-                                    className={`group relative bg-surface-container-lowest rounded-xl p-8 flex flex-col items-center justify-between transition-all duration-300 text-left
-                                        ${isActive
-                                            ? 'border-2 border-secondary shadow-[0_20px_40px_rgba(0,88,190,0.12)]'
-                                            : 'border-2 border-transparent hover:translate-y-[-4px] hover:shadow-[0_20px_40px_rgba(0,88,190,0.1)] hover:border-secondary-fixed'
-                                        }`}
-                                >
-                                    {/* Check badge */}
-                                    {isActive && (
-                                        <div className="absolute top-4 right-4">
-                                            <span className="material-symbols-outlined text-secondary"
-                                                  style={{ fontVariationSettings: "'FILL' 1" }}>
-                                                check_circle
-                                            </span>
-                                        </div>
-                                    )}
-
-                                    {/* Flag */}
-                                    <div className={`w-16 h-16 rounded-full flex items-center justify-center text-4xl mb-6 shadow-md
-                                        ${isActive ? 'outline outline-offset-4 outline-secondary/20' : 'outline outline-offset-4 outline-outline-variant/15'}`}>
-                                        {flag}
-                                    </div>
-
-                                    {/* Name & badge */}
-                                    <div className="text-center mb-6">
-                                        <h3 className="text-xl font-bold font-headline mb-2">{lang.name}</h3>
-                                        <div className={`inline-flex px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase
-                                            ${isActive
-                                                ? 'bg-secondary-fixed text-on-secondary-fixed'
-                                                : 'bg-surface-container text-on-surface-variant'
-                                            }`}>
-                                            {meta.badge}
-                                        </div>
-                                    </div>
-
-                                    {/* Level bar */}
-                                    <div className="w-full space-y-2">
-                                        <div className="flex justify-between text-xs font-medium text-on-surface-variant px-1">
-                                            <span>Level</span>
-                                            <span className="text-secondary font-bold">{meta.label}</span>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
-                                            <div className={`h-full bg-secondary rounded-full ${meta.w}`} />
-                                        </div>
-                                    </div>
-                                </button>
-                            )
-                        })}
-                    </div>
-
-                    {/* CTA */}
-                    <div className="flex flex-col items-center gap-6">
-                        <button
-                            onClick={handleStart}
-                            className="group relative px-12 py-5 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-headline font-bold text-lg shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300 overflow-hidden"
-                        >
-                            <span className="relative z-10 flex items-center gap-3">
-                                Let's Start
-                                <span className="material-symbols-outlined text-2xl group-hover:translate-x-1 transition-transform">
-                                    arrow_forward
-                                </span>
-                            </span>
-                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </button>
-
-                        <div className="flex items-center gap-3 px-5 py-3 bg-surface-container-low/60 backdrop-blur-md rounded-2xl border border-outline-variant/10">
-                            <span className="material-symbols-outlined text-secondary text-lg">info</span>
-                            <p className="text-sm font-medium text-on-surface-variant">
-                                You can change your language anytime from the sidebar.
-                            </p>
-                        </div>
-                    </div>
                 </div>
-            </main>
+
+            </div>
         </div>
     )
 }

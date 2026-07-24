@@ -1,1 +1,11 @@
 .env
+
+# Ignore all markdown files except README.md
+*.md
+!README.md
+!readme.md
+
+# Ignore specific directories
+.agents/
+.idea/
+keydocs/

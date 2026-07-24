@@ -3,6 +3,7 @@ package com.dmt.toeicapp.flashcard.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,6 +20,9 @@ public record FlashcardResponse(
 
         String         difficulty,
         String         imageUrl,
+        String         audioUrl,
+        String         partOfSpeech,
+        List<RelatedWordResponse> relatedWords,
 
         // i18n — ngôn ngữ chính được chọn
         String         primaryLocale,

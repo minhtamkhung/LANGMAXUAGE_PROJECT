@@ -463,7 +463,9 @@ public class AuthServiceImpl implements AuthService {
                         user.getUsername(),
                         user.getEmail(),
                         user.getRole().name(),
-                        user.isOnboarded()
+                        user.isOnboarded(),
+                        user.getTargetScore(),
+                        user.getDailyGoalMinutes()
                 )
         );
     }

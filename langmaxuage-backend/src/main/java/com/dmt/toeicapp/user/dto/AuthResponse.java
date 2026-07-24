@@ -15,8 +15,11 @@ public record AuthResponse(
             String username,
             String email,
             String role,
-            boolean onboarded
+            boolean onboarded,
+            Integer targetScore,
+            int dailyGoalMinutes
     ) {}
+
 
     // Static factory — gọn hơn khi dùng trong Service
     public static AuthResponse of(String accessToken, String refreshToken,

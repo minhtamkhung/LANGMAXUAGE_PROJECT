@@ -37,13 +37,13 @@ const EMPTY_FORM = {
 }
 
 // ── Modal backdrop ──────────────────────────────────────────────────────────
-function Modal({ open, onClose, children }) {
+function Modal({ open, onClose, maxWidth = "max-w-lg", children }) {
     if (!open) return null
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative z-10 w-full max-w-lg bg-surface-container-lowest rounded-[2rem] shadow-2xl
-                            border border-outline-variant/15 max-h-[90vh] overflow-y-auto animate-[fadeInUp_0.25s_ease]">
+            <div className={`relative z-10 w-full ${maxWidth} bg-surface-container-lowest rounded-[2rem] shadow-2xl
+                            border border-outline-variant/15 max-h-[90vh] overflow-y-auto animate-[fadeInUp_0.25s_ease]`}>
                 {children}
             </div>
         </div>
@@ -160,6 +160,168 @@ function FlashcardForm({ initial = EMPTY_FORM, topicId, onSaved, onCancel, loadi
                             Đang lưu...
                           </span>
                         : initial.id ? 'Lưu thay đổi' : 'Thêm Flashcard'
+                    }
+                </button>
+            </div>
+        </form>
+    )
+}
+
+function BulkFlashcardForm({ topicId, onSaved, onCancel, loading, setLoading, setError }) {
+    const [rows, setRows] = useState([
+        { word: '', pronunciation: '', definition: '', exampleSentence: '', difficulty: 'MEDIUM' }
+    ])
+
+    const addRow = () => {
+        setRows(prev => [...prev, { word: '', pronunciation: '', definition: '', exampleSentence: '', difficulty: 'MEDIUM' }])
+    }
+
+    const removeRow = (index) => {
+        if (rows.length === 1) {
+            setError('Cần ít nhất một từ vựng để tạo.')
+            return
+        }
+        setRows(prev => prev.filter((_, i) => i !== index))
+    }
+
+    const handleFieldChange = (index, field, value) => {
+        setRows(prev => prev.map((r, i) => i === index ? { ...r, [field]: value } : r))
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setError('')
+
+        // Validate
+        for (let i = 0; i < rows.length; i++) {
+            const r = rows[i]
+            if (!r.word.trim()) {
+                setError(`Dòng số ${i + 1}: Từ vựng không được để trống.`);
+                return
+            }
+            if (!r.definition.trim()) {
+                setError(`Dòng số ${i + 1}: Định nghĩa/nghĩa không được để trống.`);
+                return
+            }
+        }
+
+        setLoading(true)
+        try {
+            const payload = rows.map(r => ({
+                topicId: Number(topicId),
+                word: r.word.trim(),
+                pronunciation: r.pronunciation.trim(),
+                definition: r.definition.trim(),
+                exampleSentence: r.exampleSentence.trim(),
+                difficulty: r.difficulty || 'MEDIUM'
+            }))
+            const res = await flashcardApi.createBulk(payload)
+            onSaved(res.data.data)
+        } catch (err) {
+            setError(err.response?.data?.message || 'Không thể lưu danh sách flashcard.')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return (
+        <form onSubmit={handleSubmit} className="flex flex-col max-h-[85vh]">
+            {/* Header */}
+            <div className="p-6 border-b border-outline-variant/20 flex-shrink-0">
+                <h2 className="font-headline text-xl font-bold text-on-surface">
+                    ➕ Thêm nhiều Flashcards
+                </h2>
+                <p className="text-sm text-on-surface-variant mt-1">Nhập danh sách từ vựng bạn muốn thêm vào topic.</p>
+            </div>
+
+            {/* Scrollable list of rows */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {rows.map((row, index) => (
+                    <div key={index} className="p-5 bg-surface-container-low rounded-2xl border border-outline-variant/35 relative space-y-4">
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-xs font-bold text-primary uppercase tracking-widest">Từ thứ #{index + 1}</span>
+                            {rows.length > 1 && (
+                                <button type="button" onClick={() => removeRow(index)}
+                                        className="text-error hover:bg-error-container/20 p-2 rounded-xl flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-lg">delete</span>
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Field label="Từ / Cụm từ" required>
+                                <input value={row.word} onChange={(e) => handleFieldChange(index, 'word', e.target.value)}
+                                       placeholder="e.g. cooperate, align..." maxLength={200}
+                                       className={inputCls} />
+                            </Field>
+                            <Field label="Phiên âm (để trống nếu muốn tự động điền)">
+                                <input value={row.pronunciation} onChange={(e) => handleFieldChange(index, 'pronunciation', e.target.value)}
+                                       placeholder="e.g. /koʊˈɑːpəreɪt/" maxLength={200}
+                                       className={inputCls} />
+                            </Field>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Field label="Định nghĩa / Nghĩa" required>
+                                <textarea value={row.definition} onChange={(e) => handleFieldChange(index, 'definition', e.target.value)}
+                                          placeholder="Nghĩa của từ..." rows={2}
+                                          className={`${inputCls} resize-none`} />
+                            </Field>
+                            <Field label="Câu ví dụ">
+                                <textarea value={row.exampleSentence} onChange={(e) => handleFieldChange(index, 'exampleSentence', e.target.value)}
+                                          placeholder="Ví dụ minh họa..." rows={2}
+                                          className={`${inputCls} resize-none`} />
+                            </Field>
+                        </div>
+
+                        <Field label="Độ khó">
+                            <div className="flex gap-2">
+                                {DIFFICULTY_OPTS.map(d => (
+                                    <button key={d} type="button"
+                                            onClick={() => handleFieldChange(index, 'difficulty', d)}
+                                            className={`flex-1 py-2 text-xs font-bold rounded-xl border-2 transition-all
+                                                ${row.difficulty === d
+                                                    ? (d === 'EASY'   ? 'bg-emerald-100 border-emerald-400 text-emerald-700'
+                                                     : d === 'MEDIUM' ? 'bg-amber-100   border-amber-400   text-amber-700'
+                                                                      : 'bg-rose-100    border-rose-400    text-rose-700')
+                                                    : 'border-outline-variant/10 text-on-surface-variant hover:border-outline-variant/50'
+                                                }`}>
+                                        {d}
+                                    </button>
+                                ))}
+                            </div>
+                        </Field>
+                    </div>
+                ))}
+
+                <button type="button" onClick={addRow}
+                        className="w-full py-3.5 border-2 border-dashed border-outline-variant/30 hover:border-primary/45 rounded-2xl
+                                   text-on-surface-variant hover:text-primary font-bold text-sm transition-all flex items-center justify-center gap-2">
+                    <span className="material-symbols-outlined text-lg">add</span>
+                    Thêm từ mới
+                </button>
+            </div>
+
+            {/* Footer actions */}
+            <div className="p-6 border-t border-outline-variant/20 flex gap-3 bg-surface flex-shrink-0">
+                <button type="button" onClick={onCancel}
+                        className="flex-1 py-3.5 rounded-xl border border-outline-variant/40 text-on-surface-variant
+                                   font-bold text-sm hover:bg-surface-container transition-all">
+                    Hủy bỏ
+                </button>
+                <button type="submit" disabled={loading}
+                        className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-primary to-primary-container
+                                   text-on-primary font-extrabold text-sm shadow-lg shadow-primary/20
+                                   hover:shadow-primary/30 transition-all active:scale-[0.98] disabled:opacity-50">
+                    {loading
+                        ? <span className="flex items-center justify-center gap-2">
+                            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                            </svg>
+                            Đang lưu...
+                          </span>
+                        : `Lưu tất cả (${rows.length} từ)`
                     }
                 </button>
             </div>
@@ -446,6 +608,9 @@ export default function ManageFlashcardsPage() {
     const [search,     setSearch]     = useState('')
     const [progressMap, setProgressMap] = useState({})
 
+    const [showEditTopic, setShowEditTopic] = useState(false)
+    const [topicForm, setTopicForm] = useState({ name: '', description: '', iconUrl: '' })
+
     // Load topic + cards + progress
     useEffect(() => {
         setPageLoading(true)
@@ -455,6 +620,11 @@ export default function ManageFlashcardsPage() {
             progressApi.getMyProgress(locale).catch(() => ({ data: { data: { content: [] } } })),
         ]).then(([tRes, fcRes, pRes]) => {
             setTopic(tRes.data.data)
+            setTopicForm({
+                name: tRes.data.data?.name || '',
+                description: tRes.data.data?.description || '',
+                iconUrl: tRes.data.data?.iconUrl || ''
+            })
             setCards(fcRes.data.data?.content || [])
             
             const pMap = {}
@@ -471,8 +641,40 @@ export default function ManageFlashcardsPage() {
     }, [topicId, locale])
 
     // Handlers
-    const handleAdded = (newCard) => {
-        setCards(prev => [newCard, ...prev])
+    const handleUpdateTopic = async () => {
+        if (!topicForm.name.trim()) {
+            setError('Tên topic không được để trống')
+            return
+        }
+        setFormLoading(true)
+        setError('')
+        try {
+            const res = await topicApi.update(topicId, {
+                name: topicForm.name.trim(),
+                description: topicForm.description.trim(),
+                iconUrl: topicForm.iconUrl || null
+            })
+            const updatedTopic = res.data.data
+            if (updatedTopic.id !== Number(topicId)) {
+                alert('Đã tự động tạo một bản sao cá nhân để bạn có quyền chỉnh sửa toàn quyền!')
+                navigate(`/topics/${updatedTopic.id}/manage`)
+            } else {
+                setTopic(updatedTopic)
+                setShowEditTopic(false)
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Không thể cập nhật topic.')
+        } finally {
+            setFormLoading(false)
+        }
+    }
+
+    const handleAdded = (saved) => {
+        if (Array.isArray(saved)) {
+            setCards(prev => [...saved, ...prev])
+        } else {
+            setCards(prev => [saved, ...prev])
+        }
         setShowAdd(false)
         setError('')
     }
@@ -544,6 +746,15 @@ export default function ManageFlashcardsPage() {
                     </div>
 
                     <div className="flex items-center gap-3 flex-shrink-0">
+                        {/* Sửa Topic */}
+                        <button
+                            onClick={() => { setError(''); setShowEditTopic(true) }}
+                            className="flex items-center gap-2 px-5 py-3 border-2 border-outline-variant/30 text-on-surface-variant
+                                       font-semibold rounded-xl hover:bg-surface-container transition-all text-sm"
+                        >
+                            <span className="material-symbols-outlined text-lg">edit</span>
+                            Sửa Topic
+                        </button>
                         {/* Import CSV */}
                         <button
                             onClick={() => { setError(''); setShowImport(true) }}
@@ -643,10 +854,49 @@ export default function ManageFlashcardsPage() {
                 )}
             </div>
 
+            {/* ── Modal: Edit Topic ── */}
+            <Modal open={showEditTopic} onClose={() => setShowEditTopic(false)}>
+                <div className="space-y-4 p-8">
+                    <h2 className="font-headline text-xl font-bold text-on-surface mb-1">
+                        ✏️ Chỉnh sửa Topic
+                    </h2>
+                    <p className="text-sm text-on-surface-variant mb-5">
+                        {topic?.isSystem 
+                            ? 'Đây là topic hệ thống. Khi chỉnh sửa, hệ thống sẽ tự động tạo một bản sao cá nhân để bạn có quyền quản lý toàn quyền.' 
+                            : 'Cập nhật thông tin tiêu đề và mô tả của topic.'}
+                    </p>
+
+                    <Field label="Tên Topic" required>
+                        <input value={topicForm.name} onChange={e => setTopicForm({ ...topicForm, name: e.target.value })}
+                               placeholder="e.g. Từ vựng TOEIC nâng cao..." maxLength={100}
+                               className={inputCls} />
+                    </Field>
+
+                    <Field label="Mô tả">
+                        <textarea value={topicForm.description} onChange={e => setTopicForm({ ...topicForm, description: e.target.value })}
+                                  placeholder="Mô tả ngắn gọn về chủ đề..." rows={3}
+                                  className={`${inputCls} resize-none`} />
+                    </Field>
+
+                    <div className="flex gap-3 pt-2">
+                        <button type="button" onClick={() => setShowEditTopic(false)}
+                                className="flex-1 py-3 rounded-xl border-2 border-outline-variant/30 text-on-surface-variant
+                                           font-semibold hover:bg-surface-container transition-all">
+                            Huỷ
+                        </button>
+                        <button type="button" onClick={handleUpdateTopic} disabled={formLoading}
+                                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-primary to-primary-container
+                                           text-on-primary font-bold shadow-lg shadow-primary/20
+                                           hover:shadow-primary/30 transition-all active:scale-[0.98] disabled:opacity-50">
+                            {formLoading ? 'Đang lưu...' : 'Lưu'}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
             {/* ── Modal: Add flashcard ── */}
-            <Modal open={showAdd} onClose={() => setShowAdd(false)}>
-                <FlashcardForm
-                    initial={EMPTY_FORM}
+            <Modal open={showAdd} onClose={() => setShowAdd(false)} maxWidth="max-w-2xl">
+                <BulkFlashcardForm
                     topicId={topicId}
                     onSaved={handleAdded}
                     onCancel={() => setShowAdd(false)}

@@ -1,6 +1,7 @@
 package com.dmt.toeicapp.flashcard.controller;
 
 import com.dmt.toeicapp.common.response.ApiResponse;
+import com.dmt.toeicapp.common.security.RateLimit;
 import com.dmt.toeicapp.flashcard.dto.BulkImportResult;
 import com.dmt.toeicapp.flashcard.dto.FlashcardRequest;
 import com.dmt.toeicapp.flashcard.dto.FlashcardResponse;
@@ -13,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/flashcards")
@@ -63,6 +65,15 @@ public class FlashcardController {
         );
     }
 
+    @RateLimit(requests = 15, durationSeconds = 60, keyType = RateLimit.KeyType.USER)
+    @PostMapping("/bulk")
+    public ResponseEntity<ApiResponse<List<FlashcardResponse>>> createBulk(
+            @Valid @RequestBody List<FlashcardRequest> requests) {
+        return ResponseEntity.status(201).body(
+                ApiResponse.created(flashcardService.createBulk(requests))
+        );
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<FlashcardResponse>> update(
             @PathVariable Long id,
@@ -78,6 +89,7 @@ public class FlashcardController {
         return ResponseEntity.noContent().build();
     }
 
+    @RateLimit(requests = 10, durationSeconds = 60, keyType = RateLimit.KeyType.USER)
     @PostMapping("/{id}/image")
     public ResponseEntity<ApiResponse<FlashcardResponse>> uploadImage(
             @PathVariable Long id,
@@ -94,6 +106,7 @@ public class FlashcardController {
         );
     }
 
+    @RateLimit(requests = 10, durationSeconds = 60, keyType = RateLimit.KeyType.USER)
     @PostMapping(value = "/bulk-import", consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse<BulkImportResult>> bulkImport(
             @RequestParam("topicId") Long topicId,

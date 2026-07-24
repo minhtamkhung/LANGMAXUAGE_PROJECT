@@ -6,6 +6,7 @@ import com.dmt.toeicapp.flashcard.dto.FlashcardResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 public interface FlashcardService {
 
@@ -33,4 +34,6 @@ public interface FlashcardService {
      * Dòng đầu tiên là header (bị bỏ qua).
      */
     BulkImportResult bulkImport(Long topicId, MultipartFile file);
+
+    List<FlashcardResponse> createBulk(List<FlashcardRequest> requests);
 }

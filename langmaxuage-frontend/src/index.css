@@ -63,4 +63,21 @@
         -webkit-backface-visibility: hidden;
     }
     .flip-back { transform: rotateY(180deg); }
+
+    /* Typing Practice — shake on wrong answer */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        15%       { transform: translateX(-8px); }
+        30%       { transform: translateX(8px); }
+        45%       { transform: translateX(-6px); }
+        60%       { transform: translateX(6px); }
+        75%       { transform: translateX(-3px); }
+        90%       { transform: translateX(3px); }
+    }
+
+    /* Generic fade-in-up used across pages */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
 }

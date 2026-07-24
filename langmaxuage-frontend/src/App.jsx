@@ -12,14 +12,13 @@ import CreateTopicPage        from './pages/CreateTopicPage'
 import ManageFlashcardsPage   from './pages/ManageFlashcardsPage'
 import StudyPage              from './pages/StudyPage'
 import QuizPage               from './pages/QuizPage'
+import TypingPage             from './pages/TypingPage'
+import MatchingPage           from './pages/MatchingPage'
 import ProfilePage            from './pages/ProfilePage'
 import OnboardingPage         from './pages/OnboardingPage'
 import LanguageSelectionPage  from './pages/LanguageSelectionPage'
+import LandingPage            from './pages/LandingPage'
 
-function RootRedirect() {
-    const hasLocale = !!localStorage.getItem('appLocale')
-    return <Navigate to={hasLocale ? '/home' : '/language'} replace />
-}
 
 export default function App() {
     return (
@@ -57,12 +56,18 @@ export default function App() {
                         <Route path="/quiz" element={
                             <ProtectedRoute><QuizPage /></ProtectedRoute>
                         } />
+                        <Route path="/typing" element={
+                            <ProtectedRoute><TypingPage /></ProtectedRoute>
+                        } />
+                        <Route path="/matching" element={
+                            <ProtectedRoute><MatchingPage /></ProtectedRoute>
+                        } />
                         <Route path="/profile" element={
                             <ProtectedRoute><ProfilePage /></ProtectedRoute>
                         } />
 
                         {/* Redirect */}
-                        <Route path="/"  element={<RootRedirect />} />
+                        <Route path="/"  element={<LandingPage />} />
                         <Route path="*"  element={<Navigate to="/home" replace />} />
                     </Routes>
                 </LanguageProvider>

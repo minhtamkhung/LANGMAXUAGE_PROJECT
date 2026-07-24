@@ -16,5 +16,6 @@ public interface FlashcardMapper {
     @Mapping(target = "primaryDefinition",   ignore = true)
     @Mapping(target = "primaryExample",      ignore = true)
     @Mapping(target = "translations",        ignore = true)
+    @Mapping(target = "relatedWords",        ignore = true)
     FlashcardResponse toResponse(Flashcard flashcard);
 }
